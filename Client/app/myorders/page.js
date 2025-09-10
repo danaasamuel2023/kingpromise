@@ -170,7 +170,7 @@ const TransactionsPage = () => {
     
     setVerifyingId(transactionId);
     try {
-      const response = await axios.post(`https://datamartbackened.onrender.com/api/v1/verify-pending-transaction/${transactionId}`, {}, {
+      const response = await axios.post(`https://kingpromise.onrender.com/api/v1/verify-pending-transaction/${transactionId}`, {}, {
         headers: {
           'Authorization': `Bearer ${authToken}`
         }
