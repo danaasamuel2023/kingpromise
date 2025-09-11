@@ -76,7 +76,7 @@ export default function DepositPage() {
     setSuccess('');
     
     try {
-      const response = await axios.post('https://datahustle.onrender.com/api/v1/deposit', {
+      const response = await axios.post('https://kingpromise.onrender.com/api/v1/deposit', {
         userId,
         amount: parseFloat(amount),
         totalAmountWithFee: parseFloat(totalAmount),
