@@ -2,114 +2,106 @@
 'use client'
 import React from 'react';
 import Link from 'next/link';
-import { ArrowRight, Zap, Star, Flame } from 'lucide-react';
+import { ArrowRight, Shield, Mail, Phone, MapPin } from 'lucide-react';
 
 const Footer = () => {
   return (
-    <footer className="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
-      {/* Animated Background Elements - Smaller */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-10 -right-10 w-20 h-20 rounded-full bg-gradient-to-br from-emerald-400/5 to-teal-400/5 blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-10 -left-10 w-20 h-20 rounded-full bg-gradient-to-br from-purple-400/5 to-pink-400/5 blur-3xl animate-pulse delay-1000"></div>
-      </div>
-
-      <div className="relative z-10 max-w-7xl mx-auto px-3 py-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {/* Brand Section - Compact */}
+    <footer className="bg-gray-900 text-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {/* Brand Section */}
           <div className="lg:col-span-1">
-            <div className="mb-3">
-              <div className="flex items-center space-x-2 mb-2">
-                <div className="w-7 h-7 rounded-md bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow relative">
-                  <Zap className="w-3.5 h-3.5 text-white" strokeWidth={2} />
-                  <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center">
-                    <Star className="w-1 h-1 text-white" strokeWidth={3} />
-                  </div>
-                </div>
-                <h2 className="text-base font-black bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 text-transparent bg-clip-text">
-                  CHEAPDATE
-                </h2>
-              </div>
-              <p className="text-white/70 font-medium text-xs mb-3">
-                Your affordable data marketplace for unlimited possibilities.
+            <div className="mb-4">
+              <h2 className="text-2xl font-bold text-white mb-3">
+                DataSpot
+              </h2>
+              <p className="text-gray-400 text-sm mb-4">
+                Your trusted partner for affordable data services and digital solutions.
               </p>
               
-              {/* Social Media Links - Compact */}
-              <div className="flex space-x-2">
-                {[
-                  { platform: 'twitter', icon: TwitterIcon },
-                  { platform: 'instagram', icon: InstagramIcon },
-                  { platform: 'facebook', icon: FacebookIcon },
-                  { platform: 'linkedin', icon: LinkedInIcon }
-                ].map(({ platform, icon: Icon }) => (
-                  <a 
-                    key={platform}
-                    href="#" 
-                    className="w-7 h-7 rounded-md bg-white/10 backdrop-blur-sm hover:bg-white/20 border border-white/20 flex items-center justify-center transition-all transform hover:scale-110 group"
-                  >
-                    <Icon className="w-3 h-3 text-emerald-400 group-hover:text-emerald-300" />
-                  </a>
-                ))}
+              {/* Contact Info */}
+              <div className="space-y-2">
+                <a href="mailto:support@dataspot.com" className="flex items-center text-gray-400 hover:text-white transition-colors text-sm">
+                  <Mail className="w-4 h-4 mr-2" />
+                  support@dataspot.com
+                </a>
+                <a href="tel:+233000000000" className="flex items-center text-gray-400 hover:text-white transition-colors text-sm">
+                  <Phone className="w-4 h-4 mr-2" />
+                  +233 00 000 0000
+                </a>
               </div>
             </div>
           </div>
           
-          {/* Quick Links - Compact */}
+          {/* Quick Links */}
           <div>
-            <h3 className="text-sm font-black text-white mb-3 flex items-center">
-              <div className="w-1 h-4 bg-gradient-to-b from-emerald-400 to-teal-500 rounded-full mr-2"></div>
+            <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
               Quick Links
             </h3>
-            <ul className="space-y-2">
+            <ul className="space-y-3">
               {[
                 { name: 'Dashboard', path: '/' },
                 { name: 'Orders', path: '/orders' },
                 { name: 'Transactions', path: '/myorders' },
-                { name: 'Profile', path: '/profile' }
+                { name: 'Profile', path: '/profile' },
+                { name: 'Support', path: '/support' }
               ].map((link) => (
                 <li key={link.name}>
                   <Link 
                     href={link.path} 
-                    className="group flex items-center text-white/70 hover:text-emerald-400 transition-all font-medium text-xs"
+                    className="text-gray-400 hover:text-white transition-colors text-sm"
                   >
-                    <div className="w-4 h-4 rounded bg-white/5 group-hover:bg-emerald-500/20 flex items-center justify-center mr-2 transition-all">
-                      <ArrowRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity text-emerald-400" />
-                    </div>
-                    <span className="group-hover:translate-x-1 transition-transform">{link.name}</span>
+                    {link.name}
                   </Link>
                 </li>
               ))}
             </ul>
           </div>
           
-          {/* Data Services - Compact */}
+          {/* Services */}
           <div>
-            <h3 className="text-sm font-black text-white mb-3 flex items-center">
-              <div className="w-1 h-4 bg-gradient-to-b from-teal-400 to-cyan-500 rounded-full mr-2"></div>
+            <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
               Our Services
             </h3>
-            <ul className="space-y-2">
+            <ul className="space-y-3">
               {[
-                { name: 'MTN Data', path: '/mtnup2u', color: 'yellow' },
-                { name: 'AirtelTigo Data', path: '/at-ishare', color: 'blue' },
-                { name: 'Telecel Data', path: '/TELECEL', color: 'red', isNew: true },
-                // { name: 'Foreign Numbers', path: '/verification-services', color: 'purple' }
+                { name: 'MTN Data Plans', path: '/mtnup2u' },
+                { name: 'AirtelTigo Data', path: '/at-ishare' },
+                { name: 'Telecel Data', path: '/TELECEL' },
+                { name: 'Bulk Orders', path: '/bulk-orders' },
+                { name: 'API Access', path: '/api' }
               ].map((service) => (
                 <li key={service.name}>
                   <Link 
                     href={service.path} 
-                    className="group flex items-center text-white/70 hover:text-emerald-400 transition-all font-medium text-xs"
+                    className="text-gray-400 hover:text-white transition-colors text-sm"
                   >
-                    <div className={`w-4 h-4 rounded bg-white/5 group-hover:bg-${service.color}-500/20 flex items-center justify-center mr-2 transition-all`}>
-                      <ArrowRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity text-emerald-400" />
-                    </div>
-                    <span className="group-hover:translate-x-1 transition-transform flex items-center">
-                      {service.name}
-                      {service.isNew && (
-                        <span className="ml-1.5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white text-[9px] px-1.5 py-0.5 rounded-full font-bold shadow animate-pulse">
-                          New
-                        </span>
-                      )}
-                    </span>
+                    {service.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+          
+          {/* Company */}
+          <div>
+            <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
+              Company
+            </h3>
+            <ul className="space-y-3">
+              {[
+                { name: 'About Us', path: '/about' },
+                { name: 'Privacy Policy', path: '/privacy' },
+                { name: 'Terms of Service', path: '/terms' },
+                { name: 'Contact Us', path: '/contact' },
+                { name: 'FAQ', path: '/faq' }
+              ].map((item) => (
+                <li key={item.name}>
+                  <Link 
+                    href={item.path} 
+                    className="text-gray-400 hover:text-white transition-colors text-sm"
+                  >
+                    {item.name}
                   </Link>
                 </li>
               ))}
@@ -117,32 +109,77 @@ const Footer = () => {
           </div>
         </div>
         
-        {/* Bottom Section - Compact */}
-        <div className="mt-6 pt-4 border-t border-white/10">
+        {/* Social Media Links */}
+        <div className="mt-8 pt-8 border-t border-gray-800">
+          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+            <div className="flex items-center space-x-4">
+              {/* Social Media Icons */}
+              <a 
+                href="#" 
+                className="w-10 h-10 rounded-lg bg-gray-800 hover:bg-gray-700 flex items-center justify-center transition-colors"
+                aria-label="Twitter"
+              >
+                <TwitterIcon className="w-5 h-5 text-gray-400" />
+              </a>
+              <a 
+                href="#" 
+                className="w-10 h-10 rounded-lg bg-gray-800 hover:bg-gray-700 flex items-center justify-center transition-colors"
+                aria-label="Facebook"
+              >
+                <FacebookIcon className="w-5 h-5 text-gray-400" />
+              </a>
+              <a 
+                href="#" 
+                className="w-10 h-10 rounded-lg bg-gray-800 hover:bg-gray-700 flex items-center justify-center transition-colors"
+                aria-label="Instagram"
+              >
+                <InstagramIcon className="w-5 h-5 text-gray-400" />
+              </a>
+              <a 
+                href="#" 
+                className="w-10 h-10 rounded-lg bg-gray-800 hover:bg-gray-700 flex items-center justify-center transition-colors"
+                aria-label="LinkedIn"
+              >
+                <LinkedInIcon className="w-5 h-5 text-gray-400" />
+              </a>
+            </div>
+            
+            {/* Security Badge */}
+            <div className="flex items-center space-x-2 text-gray-400">
+              <Shield className="w-4 h-4" />
+              <span className="text-sm">Secure & Trusted</span>
+            </div>
+          </div>
+        </div>
+        
+        {/* Bottom Section */}
+        <div className="mt-8 pt-8 border-t border-gray-800">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-2 md:space-y-0">
             <div className="text-center md:text-left">
-              <p className="text-white/60 font-medium text-[10px]">
-                &copy; {new Date().getFullYear()} CHEAPDATE. All rights reserved.
+              <p className="text-gray-400 text-sm">
+                © {new Date().getFullYear()} DataSpot. All rights reserved.
               </p>
             </div>
             
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-6">
               <Link 
                 href="/privacy" 
-                className="text-white/60 hover:text-emerald-400 font-medium transition-colors text-[10px]"
+                className="text-gray-400 hover:text-white transition-colors text-sm"
               >
                 Privacy Policy
               </Link>
               <Link 
                 href="/terms" 
-                className="text-white/60 hover:text-emerald-400 font-medium transition-colors text-[10px]"
+                className="text-gray-400 hover:text-white transition-colors text-sm"
               >
                 Terms of Service
               </Link>
-              <div className="flex items-center space-x-1 text-emerald-400">
-                <Flame className="w-3 h-3 animate-bounce" />
-                <span className="font-bold text-[10px]">Keep Dating!</span>
-              </div>
+              <Link 
+                href="/cookies" 
+                className="text-gray-400 hover:text-white transition-colors text-sm"
+              >
+                Cookie Policy
+              </Link>
             </div>
           </div>
         </div>

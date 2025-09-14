@@ -155,7 +155,7 @@ export default function DepositPage() {
                 <Zap className="w-3 h-3 text-white" strokeWidth={2} />
               </div>
               <h1 className="text-base font-bold bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 text-transparent bg-clip-text">
-                CHEAPDATE
+                DataSpot
               </h1>
             </div>
             <p className="text-white/80 text-xs">Deposit Funds</p>

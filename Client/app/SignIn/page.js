@@ -11,7 +11,9 @@ import {
   AlertTriangle,
   Eye,
   EyeOff,
-  Shield
+  Shield,
+  Moon,
+  Sun
 } from 'lucide-react';
 
 // Toast Notification Component
@@ -28,18 +30,18 @@ const Toast = ({ message, type, onClose }) => {
     <div className="fixed top-4 right-4 z-50">
       <div className={`p-4 rounded-lg shadow-lg flex items-center border ${
         type === 'success' 
-          ? 'bg-green-50 text-green-800 border-green-200' 
+          ? 'bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-300 border-green-200 dark:border-green-800' 
           : type === 'error' 
-            ? 'bg-red-50 text-red-800 border-red-200' 
-            : 'bg-yellow-50 text-yellow-800 border-yellow-200'
+            ? 'bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-300 border-red-200 dark:border-red-800' 
+            : 'bg-yellow-50 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800'
       }`}>
         <div className="mr-3">
           {type === 'success' ? (
-            <CheckCircle className="h-5 w-5 text-green-600" />
+            <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
           ) : type === 'error' ? (
-            <X className="h-5 w-5 text-red-600" />
+            <X className="h-5 w-5 text-red-600 dark:text-red-400" />
           ) : (
-            <AlertTriangle className="h-5 w-5 text-yellow-600" />
+            <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
           )}
         </div>
         <div className="flex-grow">
@@ -60,6 +62,7 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
   
   // Toast state
   const [toast, setToast] = useState({
@@ -67,6 +70,30 @@ export default function LoginPage() {
     message: '',
     type: 'success'
   });
+
+  // Check for dark mode preference on mount
+  useEffect(() => {
+    const savedDarkMode = localStorage.getItem('darkMode');
+    if (savedDarkMode === 'true') {
+      setDarkMode(true);
+    } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      setDarkMode(true);
+    }
+  }, []);
+
+  // Apply dark mode class to body
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    localStorage.setItem('darkMode', darkMode.toString());
+  }, [darkMode]);
+
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+  };
 
   // Function to show toast
   const showToast = (message, type = 'success') => {
@@ -141,7 +168,20 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col justify-center py-12 sm:px-6 lg:px-8 transition-colors">
+      {/* Dark Mode Toggle - Floating Button */}
+      <button
+        onClick={toggleDarkMode}
+        className="fixed top-6 right-6 p-3 bg-white dark:bg-gray-800 rounded-full shadow-lg border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-all duration-300 z-50"
+        aria-label="Toggle dark mode"
+      >
+        {darkMode ? (
+          <Sun className="w-5 h-5 text-yellow-500" />
+        ) : (
+          <Moon className="w-5 h-5 text-gray-700" />
+        )}
+      </button>
+
       {/* Toast Notification */}
       {toast.visible && (
         <Toast 
@@ -153,31 +193,31 @@ export default function LoginPage() {
 
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-900">DataSpot</h1>
-          <h2 className="mt-2 text-lg font-medium text-gray-600">Sign in to your account</h2>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">DataSpot</h1>
+          <h2 className="mt-2 text-lg font-medium text-gray-600 dark:text-gray-400">Sign in to your account</h2>
         </div>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow-sm border border-gray-200 rounded-lg sm:px-10">
+        <div className="bg-white dark:bg-gray-800 py-8 px-4 shadow-sm border border-gray-200 dark:border-gray-700 rounded-lg sm:px-10">
           <form className="space-y-6" onSubmit={handleLogin}>
             {/* Error Display */}
             {error && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+              <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
                 <div className="flex items-start">
-                  <X className="w-5 h-5 text-red-600 mt-0.5 mr-2 flex-shrink-0" />
-                  <span className="text-sm text-red-800">{error}</span>
+                  <X className="w-5 h-5 text-red-600 dark:text-red-400 mt-0.5 mr-2 flex-shrink-0" />
+                  <span className="text-sm text-red-800 dark:text-red-300">{error}</span>
                 </div>
               </div>
             )}
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                 Email address
               </label>
               <div className="mt-1 relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-gray-400" />
+                  <Mail className="h-5 w-5 text-gray-400 dark:text-gray-500" />
                 </div>
                 <input
                   id="email"
@@ -187,7 +227,7 @@ export default function LoginPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  className="pl-10 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 sm:text-sm"
                   placeholder="you@example.com"
                   disabled={isLoading}
                 />
@@ -195,12 +235,12 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                 Password
               </label>
               <div className="mt-1 relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
+                  <Lock className="h-5 w-5 text-gray-400 dark:text-gray-500" />
                 </div>
                 <input
                   id="password"
@@ -210,7 +250,7 @@ export default function LoginPage() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10 pr-10 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  className="pl-10 pr-10 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 sm:text-sm"
                   placeholder="••••••••"
                   disabled={isLoading}
                 />
@@ -220,9 +260,9 @@ export default function LoginPage() {
                   className="absolute inset-y-0 right-0 pr-3 flex items-center"
                 >
                   {showPassword ? (
-                    <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                    <EyeOff className="h-5 w-5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400" />
                   ) : (
-                    <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                    <Eye className="h-5 w-5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400" />
                   )}
                 </button>
               </div>
@@ -236,15 +276,15 @@ export default function LoginPage() {
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700"
                 />
-                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
+                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
                   Remember me
                 </label>
               </div>
 
               <div className="text-sm">
-                <a href="/reset" className="font-medium text-blue-600 hover:text-blue-500">
+                <a href="/reset" className="font-medium text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300">
                   Forgot password?
                 </a>
               </div>
@@ -254,7 +294,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={isLoading || !email || !password}
-                className="w-full flex justify-center items-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="w-full flex justify-center items-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {isLoading ? (
                   <>
@@ -274,17 +314,17 @@ export default function LoginPage() {
           <div className="mt-6">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
+                <div className="w-full border-t border-gray-300 dark:border-gray-600" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">New to DataSpot?</span>
+                <span className="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">New to DataSpot?</span>
               </div>
             </div>
 
             <div className="mt-6">
               <a
                 href="/SignUp"
-                className="w-full flex justify-center py-2.5 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                className="w-full flex justify-center py-2.5 px-4 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
               >
                 Create an account
               </a>
@@ -293,10 +333,10 @@ export default function LoginPage() {
         </div>
 
         {/* Security Notice */}
-        <div className="mt-8 bg-white rounded-lg border border-gray-200 p-4">
+        <div className="mt-8 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
           <div className="flex items-start space-x-3">
-            <Shield className="h-5 w-5 text-gray-400 mt-0.5 flex-shrink-0" />
-            <div className="text-xs text-gray-600">
+            <Shield className="h-5 w-5 text-gray-400 dark:text-gray-500 mt-0.5 flex-shrink-0" />
+            <div className="text-xs text-gray-600 dark:text-gray-400">
               <p className="font-medium mb-1">Secure Login</p>
               <ul className="space-y-1">
                 <li>• Your password is encrypted and secure</li>
@@ -308,7 +348,7 @@ export default function LoginPage() {
         </div>
 
         <div className="mt-8 text-center">
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-gray-500 dark:text-gray-400">
             © 2025 DataSpot. All rights reserved.
           </p>
         </div>
