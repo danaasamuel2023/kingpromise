@@ -7,12 +7,12 @@ const BlockedDeviceSchema = new mongoose.Schema({
   ipAddress: { type: String },
   reason: { type: String },
   blockedAt: { type: Date, default: Date.now },
-  blockedBy: { type: mongoose.Schema.Types.ObjectId, ref: "Userdatahustle" }
+  blockedBy: { type: mongoose.Schema.Types.ObjectId, ref: "Usercheapdata" }
 });
 
 // Friend Registration Schema - for tracking registered friends
 const RegisteredFriendSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "Userdatahustle" },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "Usercheapdata" },
   name: { type: String },
   email: { type: String },
   phoneNumber: { type: String },
