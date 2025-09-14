@@ -6,18 +6,18 @@ import {
   Lock, 
   User, 
   Phone, 
-  RefreshCw, 
+  UserPlus, 
   ArrowRight,
   Loader2,
   X,
   AlertTriangle,
   CheckCircle,
-  Zap,
-  Star,
-  Flame
+  Shield,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 
-// Toast Notification Component - Compact
+// Toast Notification Component
 const Toast = ({ message, type, onClose }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -28,78 +28,29 @@ const Toast = ({ message, type, onClose }) => {
   }, [onClose]);
   
   return (
-    <div className="fixed top-3 right-3 z-50 animate-slide-in">
-      <div className={`p-2 rounded-lg shadow-lg flex items-center backdrop-blur-xl border max-w-xs ${
+    <div className="fixed top-4 right-4 z-50">
+      <div className={`p-4 rounded-lg shadow-lg flex items-center border ${
         type === 'success' 
-          ? 'bg-emerald-500/95 text-white border-emerald-400/50' 
+          ? 'bg-green-50 text-green-800 border-green-200' 
           : type === 'error' 
-            ? 'bg-red-500/95 text-white border-red-400/50' 
-            : 'bg-yellow-500/95 text-white border-yellow-400/50'
+            ? 'bg-red-50 text-red-800 border-red-200' 
+            : 'bg-yellow-50 text-yellow-800 border-yellow-200'
       }`}>
-        <div className="mr-1.5">
+        <div className="mr-3">
           {type === 'success' ? (
-            <CheckCircle className="h-3 w-3" />
+            <CheckCircle className="h-5 w-5 text-green-600" />
           ) : type === 'error' ? (
-            <X className="h-3 w-3" />
+            <X className="h-5 w-5 text-red-600" />
           ) : (
-            <AlertTriangle className="h-3 w-3" />
+            <AlertTriangle className="h-5 w-5 text-yellow-600" />
           )}
         </div>
         <div className="flex-grow">
-          <p className="font-medium text-xs">{message}</p>
+          <p className="font-medium text-sm">{message}</p>
         </div>
-        <button onClick={onClose} className="ml-2 hover:scale-110 transition-transform">
-          <X className="h-3 w-3" />
+        <button onClick={onClose} className="ml-4 hover:opacity-70 transition-opacity">
+          <X className="h-4 w-4" />
         </button>
-      </div>
-    </div>
-  );
-};
-
-// Registration Closed Modal Component - Compact
-const RegistrationClosedModal = ({ isOpen, onClose }) => {
-  if (!isOpen) return null;
-  
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-3">
-      <div className="bg-white/10 backdrop-blur-xl rounded-lg border border-white/30 w-full max-w-xs shadow-xl">
-        {/* Modal header */}
-        <div className="bg-gradient-to-r from-red-500 to-red-600 px-4 py-3 rounded-t-lg flex justify-between items-center">
-          <h3 className="text-sm font-bold text-white flex items-center">
-            <AlertTriangle className="w-3.5 h-3.5 mr-1.5" />
-            Registration Closed
-          </h3>
-          <button onClick={onClose} className="text-white hover:text-white/70 p-1 rounded-md hover:bg-white/10 transition-all">
-            <X className="w-3 h-3" />
-          </button>
-        </div>
-        
-        {/* Modal content */}
-        <div className="px-4 py-3">
-          <div className="flex items-start">
-            <div className="w-5 h-5 rounded-md bg-red-500/30 flex items-center justify-center mr-2 flex-shrink-0">
-              <AlertTriangle className="w-3 h-3 text-red-300" />
-            </div>
-            <div>
-              <p className="text-white font-medium text-xs mb-1">
-                We're sorry, but new registrations are currently closed.
-              </p>
-              <p className="text-white/70 text-[10px]">
-                Please check back later or contact our support team for more information.
-              </p>
-            </div>
-          </div>
-        </div>
-        
-        {/* Modal footer */}
-        <div className="px-4 py-3 border-t border-white/20 flex justify-end">
-          <button
-            onClick={onClose}
-            className="px-3 py-1.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold rounded-md transition-all transform hover:scale-105 text-xs"
-          >
-            Got it
-          </button>
-        </div>
       </div>
     </div>
   );
@@ -116,10 +67,11 @@ export default function SignupPage() {
   });
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   
   // Registration closed state
   const [isRegistrationClosed, setIsRegistrationClosed] = useState(false);
-  const [showModal, setShowModal] = useState(false);
   
   // Toast state
   const [toast, setToast] = useState({
@@ -127,31 +79,6 @@ export default function SignupPage() {
     message: '',
     type: 'success'
   });
-
-  // Add CSS for animations
-  useEffect(() => {
-    const style = document.createElement('style');
-    style.textContent = `
-      @keyframes slideIn {
-        from {
-          opacity: 0;
-          transform: translateX(100px);
-        }
-        to {
-          opacity: 1;
-          transform: translateX(0);
-        }
-      }
-      .animate-slide-in {
-        animation: slideIn 0.3s ease-out;
-      }
-    `;
-    document.head.appendChild(style);
-    
-    return () => {
-      document.head.removeChild(style);
-    };
-  }, []);
 
   // Function to show toast
   const showToast = (message, type = 'success') => {
@@ -178,12 +105,14 @@ export default function SignupPage() {
     }));
   };
 
-  const handleSignup = async () => {
+  const handleSignup = async (e) => {
+    e.preventDefault();
     setError('');
     
     // Check if registration is closed
     if (isRegistrationClosed) {
-      setShowModal(true);
+      setError('Registration is currently closed. Please check back later.');
+      showToast('Registration is currently closed', 'error');
       return;
     }
     
@@ -193,6 +122,14 @@ export default function SignupPage() {
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match");
       showToast("Passwords do not match", "error");
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Validate password strength (basic)
+    if (formData.password.length < 6) {
+      setError("Password must be at least 6 characters long");
+      showToast("Password must be at least 6 characters long", "error");
       setIsSubmitting(false);
       return;
     }
@@ -216,10 +153,8 @@ export default function SignupPage() {
 
       if (response.ok) {
         showToast("Registration successful! Redirecting to login...", "success");
-        // Use a direct, synchronous approach for navigation
         setTimeout(() => {
           try {
-            // Force a hard navigation instead of client-side navigation
             window.location.href = '/SignIn';
           } catch (err) {
             console.error("Navigation error:", err);
@@ -240,14 +175,7 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-black relative overflow-hidden flex items-center justify-center p-3">
-      {/* Animated Background Elements - Smaller */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-20 -right-20 w-40 h-40 rounded-full bg-gradient-to-br from-emerald-400/20 to-teal-400/20 blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-20 -left-20 w-40 h-40 rounded-full bg-gradient-to-br from-purple-400/20 to-pink-400/20 blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-48 h-48 rounded-full bg-gradient-to-br from-cyan-400/10 to-blue-400/10 blur-3xl animate-pulse delay-500"></div>
-      </div>
-
+    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       {/* Toast Notification */}
       {toast.visible && (
         <Toast 
@@ -257,206 +185,262 @@ export default function SignupPage() {
         />
       )}
 
-      {/* Registration Closed Modal */}
-      <RegistrationClosedModal 
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-      />
+      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold text-gray-900">DataSpot</h1>
+          <h2 className="mt-2 text-lg font-medium text-gray-600">Create your account</h2>
+        </div>
+      </div>
 
-      <div className="relative z-10 w-full max-w-sm">
-        {/* Main Card - Compact */}
-        <div className="bg-white/10 backdrop-blur-xl rounded-lg border border-white/30 overflow-hidden shadow-lg">
-          {/* Header - Compact */}
-          <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 p-4 relative overflow-hidden">
-            <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-white/20 flex items-center justify-center">
-              <Star className="w-2.5 h-2.5 text-white animate-pulse" />
-            </div>
-            <div className="absolute bottom-2 left-2 w-4 h-4 rounded-full bg-white/20 flex items-center justify-center">
-              <Flame className="w-2 h-2 text-white animate-bounce" />
-            </div>
-            
-            <div className="relative z-10 text-center">
-              {/* CHEAPDATE Logo - Compact */}
-              <div className="flex justify-center mb-2">
-                <div className="w-10 h-10 rounded-lg bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/30 shadow-md">
-                  <div className="text-center">
-                    <Zap className="w-4 h-4 text-white mx-auto" strokeWidth={3} />
-                    <div className="text-white font-bold text-[8px]">CHEAP</div>
-                  </div>
-                </div>
-              </div>
-              
-              <h1 className="text-base font-bold text-white mb-0.5">CHEAPDATE</h1>
-              <p className="text-white/90 text-xs">Create Your Account</p>
-            </div>
-          </div>
-
-          {/* Form Section - Compact */}
-          <div className="p-4">
-            {/* Registration Closed Warning */}
-            {isRegistrationClosed && (
-              <div className="mb-3 p-2 rounded-md flex items-start bg-yellow-500/20 border border-yellow-500/40 backdrop-blur-sm">
-                <div className="w-4 h-4 rounded bg-yellow-500/30 flex items-center justify-center mr-1.5 flex-shrink-0">
-                  <AlertTriangle className="w-2 h-2 text-yellow-300" />
-                </div>
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="bg-white py-8 px-4 shadow-sm border border-gray-200 rounded-lg sm:px-10">
+          {/* Registration Closed Warning */}
+          {isRegistrationClosed && (
+            <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <div className="flex items-start">
+                <AlertTriangle className="w-5 h-5 text-yellow-600 mt-0.5 mr-3 flex-shrink-0" />
                 <div>
-                  <span className="text-yellow-200 font-medium text-[10px]">Registration is currently closed. Form is disabled.</span>
+                  <p className="text-sm font-medium text-yellow-800">Registration Temporarily Closed</p>
+                  <p className="text-xs text-yellow-700 mt-1">
+                    We're not accepting new registrations at this time. Please check back later.
+                  </p>
                 </div>
               </div>
-            )}
+            </div>
+          )}
 
+          <form className="space-y-6" onSubmit={handleSignup}>
             {/* Error Display */}
             {error && (
-              <div className="mb-3 p-2 rounded-md flex items-start bg-red-500/20 border border-red-500/40 backdrop-blur-sm">
-                <div className="w-4 h-4 rounded bg-red-500/30 flex items-center justify-center mr-1.5 flex-shrink-0">
-                  <X className="w-2 h-2 text-red-300" />
+              <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                <div className="flex items-start">
+                  <X className="w-5 h-5 text-red-600 mt-0.5 mr-2 flex-shrink-0" />
+                  <span className="text-sm text-red-800">{error}</span>
                 </div>
-                <span className="text-red-200 font-medium text-[10px]">{error}</span>
               </div>
             )}
 
-            <div className="space-y-2.5">
-              {/* Full Name Input - Compact */}
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
-                  <User className="w-3 h-3 text-emerald-400" />
+            <div>
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                Full Name
+              </label>
+              <div className="mt-1 relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <User className="h-5 w-5 text-gray-400" />
                 </div>
-                <input 
-                  type="text" 
+                <input
+                  id="name"
                   name="name"
-                  placeholder="Full Name" 
+                  type="text"
+                  autoComplete="name"
+                  required
                   value={formData.name}
                   onChange={handleChange}
-                  className="pl-7 pr-2 py-2 block w-full rounded-md bg-white/20 backdrop-blur-sm border border-white/30 text-white placeholder-white/60 focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 font-medium text-xs"
-                  required 
+                  className="pl-10 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  placeholder="John Doe"
                   disabled={isSubmitting || isRegistrationClosed}
                 />
               </div>
+            </div>
 
-              {/* Email Input - Compact */}
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
-                  <Mail className="w-3 h-3 text-emerald-400" />
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                Email Address
+              </label>
+              <div className="mt-1 relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Mail className="h-5 w-5 text-gray-400" />
                 </div>
-                <input 
-                  type="email" 
+                <input
+                  id="email"
                   name="email"
-                  placeholder="Email Address" 
+                  type="email"
+                  autoComplete="email"
+                  required
                   value={formData.email}
                   onChange={handleChange}
-                  className="pl-7 pr-2 py-2 block w-full rounded-md bg-white/20 backdrop-blur-sm border border-white/30 text-white placeholder-white/60 focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 font-medium text-xs"
-                  required 
+                  className="pl-10 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  placeholder="you@example.com"
                   disabled={isSubmitting || isRegistrationClosed}
                 />
               </div>
+            </div>
 
-              {/* Phone Number Input - Compact */}
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
-                  <Phone className="w-3 h-3 text-emerald-400" />
+            <div>
+              <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700">
+                Phone Number
+              </label>
+              <div className="mt-1 relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Phone className="h-5 w-5 text-gray-400" />
                 </div>
-                <input 
-                  type="tel" 
+                <input
+                  id="phoneNumber"
                   name="phoneNumber"
-                  placeholder="Phone Number" 
+                  type="tel"
+                  autoComplete="tel"
+                  required
                   value={formData.phoneNumber}
                   onChange={handleChange}
-                  className="pl-7 pr-2 py-2 block w-full rounded-md bg-white/20 backdrop-blur-sm border border-white/30 text-white placeholder-white/60 focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 font-medium text-xs"
-                  required 
+                  className="pl-10 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  placeholder="+233 XX XXX XXXX"
                   disabled={isSubmitting || isRegistrationClosed}
                 />
               </div>
+            </div>
 
-              {/* Password Input - Compact */}
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
-                  <Lock className="w-3 h-3 text-emerald-400" />
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                Password
+              </label>
+              <div className="mt-1 relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Lock className="h-5 w-5 text-gray-400" />
                 </div>
-                <input 
-                  type="password" 
+                <input
+                  id="password"
                   name="password"
-                  placeholder="Password" 
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="new-password"
+                  required
                   value={formData.password}
                   onChange={handleChange}
-                  className="pl-7 pr-2 py-2 block w-full rounded-md bg-white/20 backdrop-blur-sm border border-white/30 text-white placeholder-white/60 focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 font-medium text-xs"
-                  required 
+                  className="pl-10 pr-10 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  placeholder="••••••••"
                   disabled={isSubmitting || isRegistrationClosed}
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                  ) : (
+                    <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                  )}
+                </button>
               </div>
+              <p className="mt-1 text-xs text-gray-500">Must be at least 6 characters</p>
+            </div>
 
-              {/* Confirm Password Input - Compact */}
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
-                  <Lock className="w-3 h-3 text-emerald-400" />
+            <div>
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+                Confirm Password
+              </label>
+              <div className="mt-1 relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Lock className="h-5 w-5 text-gray-400" />
                 </div>
-                <input 
-                  type="password" 
+                <input
+                  id="confirmPassword"
                   name="confirmPassword"
-                  placeholder="Confirm Password" 
+                  type={showConfirmPassword ? "text" : "password"}
+                  autoComplete="new-password"
+                  required
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className="pl-7 pr-2 py-2 block w-full rounded-md bg-white/20 backdrop-blur-sm border border-white/30 text-white placeholder-white/60 focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 font-medium text-xs"
-                  required 
+                  className="pl-10 pr-10 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  placeholder="••••••••"
                   disabled={isSubmitting || isRegistrationClosed}
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                >
+                  {showConfirmPassword ? (
+                    <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                  ) : (
+                    <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                  )}
+                </button>
               </div>
+            </div>
 
-              {/* Referral Code Input - Compact */}
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
-                  <RefreshCw className="w-3 h-3 text-emerald-400" />
+            <div>
+              <label htmlFor="referralCode" className="block text-sm font-medium text-gray-700">
+                Referral Code (Optional)
+              </label>
+              <div className="mt-1 relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <UserPlus className="h-5 w-5 text-gray-400" />
                 </div>
-                <input 
-                  type="text" 
+                <input
+                  id="referralCode"
                   name="referralCode"
-                  placeholder="Referral Code (Optional)" 
+                  type="text"
                   value={formData.referralCode}
                   onChange={handleChange}
-                  className="pl-7 pr-2 py-2 block w-full rounded-md bg-white/20 backdrop-blur-sm border border-white/30 text-white placeholder-white/60 focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 font-medium text-xs"
+                  className="pl-10 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  placeholder="Enter referral code"
                   disabled={isSubmitting || isRegistrationClosed}
                 />
               </div>
+            </div>
 
-              {/* Submit Button - Compact */}
-              <button 
-                onClick={handleSignup}
-                className={`w-full flex items-center justify-center py-2 px-3 rounded-md shadow-lg text-white font-bold transition-all duration-300 transform text-xs ${
-                  (isSubmitting || isRegistrationClosed)
-                    ? 'bg-gradient-to-r from-gray-500 to-gray-600 opacity-60 cursor-not-allowed' 
-                    : 'bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-emerald-500/50'
-                }`}
+            <div>
+              <button
+                type="submit"
                 disabled={isSubmitting || isRegistrationClosed}
+                className="w-full flex justify-center items-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {isSubmitting ? (
                   <>
-                    <Loader2 className="animate-spin mr-1.5 w-3 h-3" />
-                    Creating Account...
+                    <Loader2 className="animate-spin -ml-1 mr-2 h-5 w-5" />
+                    Creating account...
                   </>
                 ) : isRegistrationClosed ? (
                   <>
-                    <AlertTriangle className="mr-1.5 w-3 h-3" />
+                    <AlertTriangle className="-ml-1 mr-2 h-5 w-5" />
                     Registration Closed
                   </>
                 ) : (
                   <>
-                    <Zap className="mr-1.5 w-3 h-3" />
-                    Create Account
-                    <ArrowRight className="ml-1.5 w-3 h-3" />
+                    Create account
+                    <ArrowRight className="ml-2 h-5 w-5" />
                   </>
                 )}
               </button>
             </div>
+          </form>
 
-            {/* Login Link - Compact */}
-            <div className="text-center mt-3">
-              <p className="text-white font-medium text-xs">
-                Already have an account? 
-                <a href="/SignIn" className="text-emerald-400 hover:text-emerald-300 ml-1 font-bold hover:underline transition-colors">
-                  Login
-                </a>
-              </p>
+          <div className="mt-6">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300" />
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white text-gray-500">Already have an account?</span>
+              </div>
+            </div>
+
+            <div className="mt-6">
+              <a
+                href="/SignIn"
+                className="w-full flex justify-center py-2.5 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+              >
+                Sign in instead
+              </a>
             </div>
           </div>
+        </div>
+
+        {/* Terms and Privacy Notice */}
+        <div className="mt-8 bg-white rounded-lg border border-gray-200 p-4">
+          <div className="flex items-start space-x-3">
+            <Shield className="h-5 w-5 text-gray-400 mt-0.5 flex-shrink-0" />
+            <div className="text-xs text-gray-600">
+              <p className="font-medium mb-1">Your Information is Safe</p>
+              <p>By creating an account, you agree to our Terms of Service and Privacy Policy. We take your privacy seriously and will never share your information without your consent.</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-8 text-center">
+          <p className="text-xs text-gray-500">
+            © 2025 DataSpot. All rights reserved.
+          </p>
         </div>
       </div>
     </div>

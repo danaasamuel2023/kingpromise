@@ -1,8 +1,35 @@
 'use client'
 import React, { useState, useEffect } from 'react';
-import { CreditCard, Package, Database, DollarSign, TrendingUp, Calendar,X, AlertCircle, PlusCircle, User, BarChart2, ChevronDown, ChevronUp, Clock, Eye, Globe, Zap, Activity, Sparkles, ArrowUpRight, Star, Target, Flame, Award, Shield, Info, Timer, CheckCircle } from 'lucide-react';
+import { 
+  CreditCard, 
+  Package, 
+  Database, 
+  DollarSign, 
+  TrendingUp, 
+  Calendar,
+  X, 
+  AlertCircle, 
+  PlusCircle, 
+  User, 
+  BarChart2, 
+  ChevronDown, 
+  ChevronUp, 
+  Clock, 
+  Eye, 
+  Globe, 
+  Activity, 
+  ArrowUpRight, 
+  Shield, 
+  Info, 
+  Timer, 
+  CheckCircle,
+  Home,
+  FileText,
+  HelpCircle,
+  Settings
+} from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { AnimatedCounter, CurrencyCounter } from './Animation'; // Adjust the import path as necessary
+import { AnimatedCounter, CurrencyCounter } from './Animation';
 import DailySalesChart from '@/app/week/page';
 
 const DashboardPage = () => {
@@ -17,13 +44,9 @@ const DashboardPage = () => {
     recentTransactions: []
   });
   
-  // Add a state to control animation start
   const [animateStats, setAnimateStats] = useState(false);
-  // Add state to control sales chart visibility
   const [showSalesChart, setShowSalesChart] = useState(false);
-  // Add state for sales chart time period
   const [salesPeriod, setSalesPeriod] = useState('7d');
-  // Add state for notice visibility
   const [showNotice, setShowNotice] = useState(true);
 
   const ViewAll = () => {
@@ -63,8 +86,6 @@ const DashboardPage = () => {
   };
 
   useEffect(() => {
-    // Check if user is authenticated
-    // Fetch user data from localStorage
     const userDataString = localStorage.getItem('userData');
     if (!userDataString) {
       router.push('/SignUp');
@@ -75,14 +96,12 @@ const DashboardPage = () => {
     setUserName(userData.name || 'User');
     fetchDashboardData(userData.id);
     
-    // Check if user has dismissed the notice before
     const noticeDismissed = localStorage.getItem('dataDeliveryNoticeDismissed');
     if (noticeDismissed === 'true') {
       setShowNotice(false);
     }
   }, [router]);
 
-  // Fetch dashboard data from API
   const fetchDashboardData = async (userId) => {
     try {
       setLoading(true);
@@ -101,7 +120,6 @@ const DashboardPage = () => {
       const responseData = await response.json();
       
       if (responseData.status === 'success') {
-        // Map API data to our stats state
         const { userBalance, todayOrders } = responseData.data;
         
         setStats({
@@ -124,22 +142,18 @@ const DashboardPage = () => {
           }))
         });
         
-        // Set loading to false first
         setLoading(false);
         
-        // Delay animation start slightly for better UX
         setTimeout(() => {
           setAnimateStats(true);
         }, 300);
       }
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
-      // You might want to show an error message to the user
       setLoading(false);
     }
   };
 
-  // Helper function to format data capacity (convert to GB if needed)
   const formatDataCapacity = (capacity) => {
     if (capacity >= 1000) {
       return (capacity / 1000).toFixed(1);
@@ -147,7 +161,6 @@ const DashboardPage = () => {
     return capacity;
   };
 
-  // Format currency
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('en-GH', {
       style: 'currency',
@@ -156,7 +169,6 @@ const DashboardPage = () => {
     }).format(value);
   };
 
-  // Get greeting based on time of day - Ghana time
   const getGreeting = () => {
     const hour = new Date().getHours();
     if (hour < 12) return 'Good morning'; 
@@ -164,25 +176,14 @@ const DashboardPage = () => {
     return 'Good evening'; 
   };
 
-  // Get English greeting
-  const getEnglishGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return 'Morning';
-    if (hour < 18) return 'Afternoon';
-    return 'Evening';
-  };
-
-  // Toggle sales chart visibility
   const toggleSalesChart = () => {
     setShowSalesChart(!showSalesChart);
   };
 
-  // Handle time period change for sales data
   const handleSalesPeriodChange = (period) => {
     setSalesPeriod(period);
   };
 
-  // Dismiss notice handler
   const dismissNotice = () => {
     setShowNotice(false);
     localStorage.setItem('dataDeliveryNoticeDismissed', 'true');
@@ -190,329 +191,287 @@ const DashboardPage = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="text-center">
-          {/* Compact Loading Animation */}
-          <div className="relative w-16 h-16 mx-auto mb-4">
-            <div className="absolute inset-0 rounded-full border-2 border-emerald-200/20"></div>
-            <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-emerald-400 border-r-teal-400 animate-spin"></div>
-            <div className="absolute inset-2 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 animate-pulse flex items-center justify-center">
-              <Zap className="w-4 h-4 text-white animate-bounce" strokeWidth={2} />
-            </div>
+          <div className="relative w-12 h-12 mx-auto mb-4">
+            <div className="w-12 h-12 rounded-full border-2 border-gray-200"></div>
+            <div className="absolute top-0 w-12 h-12 rounded-full border-2 border-transparent border-t-blue-600 animate-spin"></div>
           </div>
-          
-          <div className="space-y-2">
-            <h1 className="text-lg font-bold bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 text-transparent bg-clip-text animate-pulse">
-              CHEAPDATE
-            </h1>
-            <div className="flex items-center justify-center space-x-1 text-emerald-300">
-              <Sparkles className="w-3 h-3 animate-spin" />
-              <span className="text-xs">Loading...</span>
-              <Sparkles className="w-3 h-3 animate-spin" />
-            </div>
-          </div>
+          <h1 className="text-xl font-bold text-gray-900 mb-2">DataSpot</h1>
+          <p className="text-gray-500 text-sm">Loading dashboard...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
-      {/* Animated Background Elements - Smaller */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-20 -right-20 w-40 h-40 rounded-full bg-gradient-to-br from-emerald-400/5 to-teal-400/5 blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-20 -left-20 w-40 h-40 rounded-full bg-gradient-to-br from-purple-400/5 to-pink-400/5 blur-3xl animate-pulse delay-1000"></div>
-      </div>
+    <div className="min-h-screen bg-gray-50">
+      {/* Navigation Bar */}
+      <nav className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center">
+              <h1 className="text-2xl font-bold text-gray-900">DataSpot</h1>
+            </div>
+            <div className="flex items-center space-x-4">
+              <Shield className="w-5 h-5 text-gray-400" />
+              <button
+                onClick={() => router.push('/profile')}
+                className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                <User className="w-5 h-5 text-gray-600" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </nav>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-3 sm:px-4 py-3">
-        {/* Data Delivery Notice - Compact */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Service Notice */}
         {showNotice && (
-          <div className="mb-3 animate-fadeInDown">
-            <div className="bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-amber-500/20 backdrop-blur-xl rounded-lg p-3 border border-amber-500/30 relative overflow-hidden">
-              <div className="relative z-10">
-                <div className="flex items-start space-x-2">
-                  <div className="flex-shrink-0">
-                    <div className="w-6 h-6 rounded-md bg-amber-500/20 backdrop-blur-sm flex items-center justify-center border border-amber-500/30">
-                      <Timer className="w-3 h-3 text-amber-300" strokeWidth={2} />
-                    </div>
-                  </div>
-                  
-                  <div className="flex-grow">
-                    <div className="flex items-start justify-between">
-                      <div className="space-y-1">
-                        <h3 className="text-xs font-bold text-white flex items-center space-x-1">
-                          <Info className="w-3 h-3 text-amber-300" />
-                          <span>Service Info</span>
-                        </h3>
-                        
-                        <div className="grid grid-cols-2 gap-2 mt-2">
-                          <div className="bg-white/10 backdrop-blur-sm rounded-md p-2 border border-white/20">
-                            <div className="flex items-center space-x-1">
-                              <Timer className="w-3 h-3 text-amber-300" />
-                              <span className="text-[10px] font-semibold text-white">Delivery</span>
-                            </div>
-                            <p className="text-amber-300 text-xs font-bold">5min - 4hr</p>
-                          </div>
-                          
-                          <div className="bg-white/10 backdrop-blur-sm rounded-md p-2 border border-white/20">
-                            <div className="flex items-center space-x-1">
-                              <Clock className="w-3 h-3 text-emerald-300" />
-                              <span className="text-[10px] font-semibold text-white">Hours</span>
-                            </div>
-                            <p className="text-emerald-300 text-xs font-bold">8AM - 9PM</p>
-                          </div>
-                        </div>
+          <div className="mb-6">
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+              <div className="flex items-start">
+                <Info className="w-5 h-5 text-amber-600 mt-0.5 mr-3 flex-shrink-0" />
+                <div className="flex-grow">
+                  <h3 className="text-sm font-medium text-amber-900 mb-2">Service Information</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="flex items-center space-x-2">
+                      <Timer className="w-4 h-4 text-amber-600" />
+                      <div>
+                        <p className="text-xs text-gray-600">Delivery Time</p>
+                        <p className="text-sm font-medium text-gray-900">5 min - 4 hours</p>
                       </div>
-                      
-                      <button
-                        onClick={dismissNotice}
-                        className="ml-2 text-white/60 hover:text-white transition-colors"
-                        aria-label="Dismiss notice"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Clock className="w-4 h-4 text-amber-600" />
+                      <div>
+                        <p className="text-xs text-gray-600">Service Hours</p>
+                        <p className="text-sm font-medium text-gray-900">8:00 AM - 9:00 PM</p>
+                      </div>
                     </div>
                   </div>
                 </div>
+                <button
+                  onClick={dismissNotice}
+                  className="text-amber-600 hover:text-amber-700 transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
               </div>
             </div>
           </div>
         )}
 
-        {/* Hero Section - Very Compact */}
-        <div className="mb-3">
-          <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 rounded-lg p-3 relative overflow-hidden shadow-lg">
-            <div className="relative z-10">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <div className="w-6 h-6 rounded-md bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/30">
-                    <Zap className="w-3 h-3 text-white" strokeWidth={2} />
-                  </div>
-                  <div>
-                    <h1 className="text-sm font-bold text-white">CHEAPDATE</h1>
-                    <p className="text-[10px] text-white/80">{getGreeting()}, {userName}!</p>
-                  </div>
-                </div>
-                
-                <div className="flex space-x-2">
-                  <button 
-                    onClick={navigateToTopup}
-                    className="bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white font-medium py-1.5 px-3 rounded-md border border-white/30 transition-all flex items-center space-x-1"
-                  >
-                    <PlusCircle className="w-3 h-3" />
-                    <span className="text-xs">Top Up</span>
-                  </button>
-                  
-                  <button 
-                    onClick={() => router.push('/orders')}
-                    className="bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white font-medium py-1.5 px-3 rounded-md border border-white/30 transition-all flex items-center space-x-1"
-                  >
-                    <Package className="w-3 h-3" />
-                    <span className="text-xs">Orders</span>
-                  </button>
-                </div>
+        {/* Welcome Section */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-2">
+            {getGreeting()}, {userName}
+          </h2>
+          <p className="text-gray-600">Welcome to your DataSpot dashboard</p>
+        </div>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {/* Balance Card */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-2 bg-blue-100 rounded-lg">
+                <DollarSign className="w-6 h-6 text-blue-600" />
+              </div>
+              <button
+                onClick={navigateToTopup}
+                className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+              >
+                Add Funds
+              </button>
+            </div>
+            <p className="text-sm text-gray-600 mb-1">Available Balance</p>
+            <p className="text-2xl font-semibold text-gray-900">
+              {animateStats ? 
+                <CurrencyCounter value={stats.balance} duration={1500} /> : 
+                formatCurrency(0)
+              }
+            </p>
+          </div>
+
+          {/* Orders Today */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-2 bg-green-100 rounded-lg">
+                <Package className="w-6 h-6 text-green-600" />
               </div>
             </div>
+            <p className="text-sm text-gray-600 mb-1">Orders Today</p>
+            <p className="text-2xl font-semibold text-gray-900">
+              {animateStats ? 
+                <AnimatedCounter value={stats.todayOrders} duration={1200} /> : 
+                "0"
+              }
+            </p>
+          </div>
+
+          {/* Data Sold */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-2 bg-purple-100 rounded-lg">
+                <Database className="w-6 h-6 text-purple-600" />
+              </div>
+            </div>
+            <p className="text-sm text-gray-600 mb-1">Data Sold Today</p>
+            <p className="text-2xl font-semibold text-gray-900">
+              {animateStats ? 
+                <><AnimatedCounter value={stats.todayGbSold} duration={1200} /> GB</> : 
+                "0 GB"
+              }
+            </p>
+          </div>
+
+          {/* Revenue Today */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-2 bg-indigo-100 rounded-lg">
+                <TrendingUp className="w-6 h-6 text-indigo-600" />
+              </div>
+            </div>
+            <p className="text-sm text-gray-600 mb-1">Today's Revenue</p>
+            <p className="text-2xl font-semibold text-gray-900">
+              {animateStats ? 
+                <CurrencyCounter value={stats.todayRevenue} duration={1500} /> : 
+                formatCurrency(0)
+              }
+            </p>
           </div>
         </div>
 
-        {/* Stats Grid - Very Compact */}
-        <div className="mb-3">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
-            {/* Balance Card - Compact */}
-            <div className="col-span-2 bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 rounded-lg p-3 text-white relative overflow-hidden shadow-lg">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <div className="w-8 h-8 rounded-md bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                    <DollarSign className="w-4 h-4 text-white" strokeWidth={2} />
-                  </div>
-                  <div>
-                    <p className="text-[10px] text-white/80">Balance</p>
-                    <p className="text-base font-bold text-white">
-                      {animateStats ? 
-                        <CurrencyCounter value={stats.balance} duration={1500} /> : 
-                        formatCurrency(0)
-                      }
-                    </p>
-                  </div>
-                </div>
-                
-                <button
-                  onClick={navigateToTopup}
-                  className="bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white font-medium py-1 px-2 rounded-md border border-white/30 transition-all"
-                >
-                  <span className="text-xs">Add</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Orders Today - Compact */}
-            <div className="bg-white/10 backdrop-blur-xl rounded-lg p-3 border border-white/20">
-              <div className="space-y-1">
-                <div className="flex items-center justify-between">
-                  <Package className="w-3 h-3 text-emerald-400" strokeWidth={2} />
-                  <span className="text-lg font-bold text-white">
-                    {animateStats ? 
-                      <AnimatedCounter value={stats.todayOrders} duration={1200} /> : 
-                      "0"
-                    }
-                  </span>
-                </div>
-                <p className="text-white text-[10px]">Orders Today</p>
-              </div>
-            </div>
-
-            {/* Revenue Today - Compact */}
-            <div className="bg-white/10 backdrop-blur-xl rounded-lg p-3 border border-white/20">
-              <div className="space-y-1">
-                <div className="flex items-center justify-between">
-                  <TrendingUp className="w-3 h-3 text-purple-400" strokeWidth={2} />
-                  <span className="text-sm font-bold text-white">
-                    {animateStats ? 
-                      <CurrencyCounter value={stats.todayRevenue} duration={1500} /> : 
-                      formatCurrency(0)
-                    }
-                  </span>
-                </div>
-                <p className="text-white text-[10px]">Revenue</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Network Selection - Very Compact */}
-        <div className="mb-3">
-          <div className="bg-white/5 backdrop-blur-xl rounded-lg p-3 border border-white/20">
-            <div className="flex items-center space-x-2 mb-2">
-              <Zap className="w-3 h-3 text-emerald-400" strokeWidth={2} />
-              <h2 className="text-xs font-bold text-white">Quick Order</h2>
-            </div>
-            
-            <div className="grid grid-cols-3 gap-2">
+        {/* Quick Actions */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          {/* Network Services */}
+          <div className="lg:col-span-2 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Order</h3>
+            <div className="grid grid-cols-3 gap-4">
               <button 
                 onClick={() => navigateToNetwork('mtn')}
-                className="bg-gradient-to-br from-yellow-500 to-yellow-600 hover:from-yellow-400 hover:to-yellow-500 rounded-md p-2 transition-all transform hover:scale-105"
+                className="p-4 bg-yellow-50 hover:bg-yellow-100 rounded-lg border border-yellow-200 transition-colors"
               >
                 <div className="text-center">
-                  <p className="text-white font-bold text-xs">MTN</p>
-                  <p className="text-white/80 text-[9px]">Data</p>
+                  <Globe className="w-8 h-8 text-yellow-600 mx-auto mb-2" />
+                  <p className="font-medium text-gray-900">MTN</p>
+                  <p className="text-sm text-gray-500">Data Plans</p>
                 </div>
               </button>
 
               <button 
                 onClick={() => navigateToNetwork('airteltigo')}
-                className="bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 rounded-md p-2 transition-all transform hover:scale-105"
+                className="p-4 bg-blue-50 hover:bg-blue-100 rounded-lg border border-blue-200 transition-colors"
               >
                 <div className="text-center">
-                  <p className="text-white font-bold text-xs">ATigo</p>
-                  <p className="text-white/80 text-[9px]">Data</p>
+                  <Globe className="w-8 h-8 text-blue-600 mx-auto mb-2" />
+                  <p className="font-medium text-gray-900">AirtelTigo</p>
+                  <p className="text-sm text-gray-500">Data Plans</p>
                 </div>
               </button>
 
               <button 
                 onClick={() => navigateToNetwork('telecel')}
-                className="bg-gradient-to-br from-red-500 to-red-600 hover:from-red-400 hover:to-red-500 rounded-md p-2 transition-all transform hover:scale-105"
+                className="p-4 bg-red-50 hover:bg-red-100 rounded-lg border border-red-200 transition-colors"
               >
                 <div className="text-center">
-                  <p className="text-white font-bold text-xs">Telecel</p>
-                  <p className="text-white/80 text-[9px]">Data</p>
+                  <Globe className="w-8 h-8 text-red-600 mx-auto mb-2" />
+                  <p className="font-medium text-gray-900">Telecel</p>
+                  <p className="text-sm text-gray-500">Data Plans</p>
                 </div>
+              </button>
+            </div>
+          </div>
+
+          {/* Quick Links */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Links</h3>
+            <div className="space-y-2">
+              <button
+                onClick={navigateToTopup}
+                className="w-full text-left p-3 hover:bg-gray-50 rounded-lg transition-colors flex items-center justify-between"
+              >
+                <div className="flex items-center space-x-3">
+                  <CreditCard className="w-5 h-5 text-gray-400" />
+                  <span className="text-sm font-medium text-gray-700">Add Funds</span>
+                </div>
+                <ChevronUp className="w-4 h-4 text-gray-400 -rotate-90" />
+              </button>
+              
+              <button
+                onClick={() => router.push('/orders')}
+                className="w-full text-left p-3 hover:bg-gray-50 rounded-lg transition-colors flex items-center justify-between"
+              >
+                <div className="flex items-center space-x-3">
+                  <FileText className="w-5 h-5 text-gray-400" />
+                  <span className="text-sm font-medium text-gray-700">View Orders</span>
+                </div>
+                <ChevronUp className="w-4 h-4 text-gray-400 -rotate-90" />
+              </button>
+              
+              <button
+                onClick={() => router.push('/support')}
+                className="w-full text-left p-3 hover:bg-gray-50 rounded-lg transition-colors flex items-center justify-between"
+              >
+                <div className="flex items-center space-x-3">
+                  <HelpCircle className="w-5 h-5 text-gray-400" />
+                  <span className="text-sm font-medium text-gray-700">Get Support</span>
+                </div>
+                <ChevronUp className="w-4 h-4 text-gray-400 -rotate-90" />
               </button>
             </div>
           </div>
         </div>
 
-        {/* Recent Activity - Very Compact */}
-        <div className="mb-3">
-          <div className="bg-white/5 backdrop-blur-xl rounded-lg border border-white/20 overflow-hidden">
-            <div className="p-3 border-b border-white/10">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <Activity className="w-3 h-3 text-emerald-400" strokeWidth={2} />
-                  <h2 className="text-xs font-bold text-white">Recent Activity</h2>
-                </div>
-                
-                <button 
-                  onClick={ViewAll}
-                  className="flex items-center space-x-1 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white font-medium py-1 px-2 rounded-md border border-white/20 transition-all"
-                >
-                  <span className="text-[10px]">View All</span>
-                  <ArrowUpRight className="w-2.5 h-2.5" />
-                </button>
-              </div>
-            </div>
-            
-            <div className="p-3">
-              {stats.recentTransactions.length > 0 ? (
-                <div className="space-y-2">
-                  {stats.recentTransactions.slice(0, 3).map((transaction, index) => (
-                    <div key={transaction.id} className="flex items-center justify-between p-2 bg-white/5 rounded-md border border-white/10 hover:bg-white/10 transition-colors">
-                      <div className="flex items-center space-x-2">
-                        <Database className="w-3 h-3 text-emerald-400" strokeWidth={2} />
-                        <div>
-                          <p className="text-white text-[10px] font-medium">{transaction.customer}</p>
-                          <p className="text-white/70 text-[9px]">{transaction.gb}GB • {transaction.method}</p>
-                        </div>
-                      </div>
-                      
-                      <div className="text-right">
-                        <p className="text-white font-medium text-[10px]">{formatCurrency(transaction.amount)}</p>
-                        <p className="text-white/70 text-[9px]">{transaction.time}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-4">
-                  <Database className="w-4 h-4 text-white/30 mx-auto mb-1" />
-                  <p className="text-white/70 text-[10px]">No transactions yet</p>
-                </div>
-              )}
+        {/* Recent Transactions */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-gray-900">Recent Transactions</h3>
+              <button 
+                onClick={ViewAll}
+                className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center space-x-1"
+              >
+                <span>View All</span>
+                <ArrowUpRight className="w-4 h-4" />
+              </button>
             </div>
           </div>
-        </div>
-
-        {/* Quick Actions - Very Compact Grid */}
-        <div className="grid grid-cols-6 gap-1.5">
-          {[
-            { icon: Package, label: 'Order', path: '/datamart', color: 'from-emerald-400 to-teal-500' },
-            { icon: BarChart2, label: 'Stats', path: '/reports', color: 'from-blue-400 to-indigo-500' },
-            { icon: Clock, label: 'History', path: '/orders', color: 'from-purple-400 to-pink-500' },
-            { icon: CreditCard, label: 'Top Up', onClick: navigateToTopup, color: 'from-yellow-400 to-orange-500' },
-            { icon: AlertCircle, label: 'Support', path: '/support', color: 'from-red-400 to-red-500' },
-            { icon: User, label: 'Profile', path: '/profile', color: 'from-gray-400 to-gray-500' }
-          ].map((action, index) => (
-            <button
-              key={index}
-              onClick={action.onClick || (() => router.push(action.path))}
-              className={`group bg-gradient-to-br ${action.color} hover:scale-105 rounded-md p-2 transition-all duration-200 transform shadow`}
-            >
-              <div className="text-center">
-                <action.icon className="w-3.5 h-3.5 text-white mx-auto mb-0.5" strokeWidth={2} />
-                <p className="text-white font-medium text-[9px]">{action.label}</p>
+          
+          <div className="p-6">
+            {stats.recentTransactions.length > 0 ? (
+              <div className="space-y-3">
+                {stats.recentTransactions.slice(0, 5).map((transaction) => (
+                  <div key={transaction.id} className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg transition-colors">
+                    <div className="flex items-center space-x-3">
+                      <div className="p-2 bg-gray-100 rounded-lg">
+                        <Database className="w-5 h-5 text-gray-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">{transaction.customer}</p>
+                        <p className="text-xs text-gray-500">{transaction.gb}GB • {transaction.method}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="text-right">
+                      <p className="text-sm font-medium text-gray-900">{formatCurrency(transaction.amount)}</p>
+                      <p className="text-xs text-gray-500">{transaction.time}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
-            </button>
-          ))}
+            ) : (
+              <div className="text-center py-8">
+                <Database className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                <p className="text-gray-500">No transactions yet</p>
+                <p className="text-sm text-gray-400 mt-1">Your recent transactions will appear here</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-
-      {/* Add fadeInDown animation */}
-      <style jsx>{`
-        @keyframes fadeInDown {
-          from {
-            opacity: 0;
-            transform: translateY(-20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        
-        .animate-fadeInDown {
-          animation: fadeInDown 0.5s ease-out;
-        }
-      `}</style>
     </div>
   );
 };

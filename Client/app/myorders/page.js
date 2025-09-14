@@ -11,14 +11,15 @@ import {
   ChevronRight,
   Filter,
   AlertCircle,
-  Moon,
-  Sun,
-  Zap,
   Activity,
   TrendingUp,
   DollarSign,
   Calendar,
-  Search
+  Search,
+  FileText,
+  MoreVertical,
+  Download,
+  Shield
 } from 'lucide-react';
 
 const TransactionsPage = () => {
@@ -43,40 +44,6 @@ const TransactionsPage = () => {
     message: '',
     type: 'success'
   });
-  const [darkMode, setDarkMode] = useState(false);
-
-  // Effect to check system preference for dark mode
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      // Check if user has already set a preference
-      const savedDarkMode = localStorage.getItem('darkMode');
-      
-      if (savedDarkMode !== null) {
-        setDarkMode(savedDarkMode === 'true');
-      } else {
-        // Check system preference
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        setDarkMode(prefersDark);
-      }
-    }
-  }, []);
-
-  // Effect to update HTML class when dark mode changes
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-    
-    // Save preference to localStorage
-    localStorage.setItem('darkMode', darkMode);
-  }, [darkMode]);
-
-  // Toggle dark mode
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-  };
 
   // Get token and user data from localStorage when component mounts
   useEffect(() => {
@@ -240,7 +207,14 @@ const TransactionsPage = () => {
 
   // Format date
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleString();
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric', 
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   };
 
   // Format currency
@@ -251,31 +225,35 @@ const TransactionsPage = () => {
     }).format(amount);
   };
 
-  // Get status icon and color - Compact
+  // Get status display
   const getStatusDisplay = (status) => {
     switch (status) {
       case 'completed':
         return { 
-          icon: <CheckCircle className="w-3 h-3" />, 
-          color: 'text-emerald-600 bg-gradient-to-r from-emerald-100 to-emerald-200 dark:from-emerald-900/40 dark:to-emerald-800/40 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-700',
+          icon: <CheckCircle className="w-4 h-4" />, 
+          color: 'text-green-700 bg-green-100',
+          borderColor: 'border-green-200',
           text: 'Completed'
         };
       case 'pending':
         return { 
-          icon: <Clock className="w-3 h-3" />, 
-          color: 'text-yellow-600 bg-gradient-to-r from-yellow-100 to-yellow-200 dark:from-yellow-900/40 dark:to-yellow-800/40 dark:text-yellow-400 border border-yellow-300 dark:border-yellow-700',
+          icon: <Clock className="w-4 h-4" />, 
+          color: 'text-yellow-700 bg-yellow-100',
+          borderColor: 'border-yellow-200',
           text: 'Pending'
         };
       case 'failed':
         return { 
-          icon: <XCircle className="w-3 h-3" />, 
-          color: 'text-red-600 bg-gradient-to-r from-red-100 to-red-200 dark:from-red-900/40 dark:to-red-800/40 dark:text-red-400 border border-red-300 dark:border-red-700',
+          icon: <XCircle className="w-4 h-4" />, 
+          color: 'text-red-700 bg-red-100',
+          borderColor: 'border-red-200',
           text: 'Failed'
         };
       default:
         return { 
-          icon: <AlertCircle className="w-3 h-3" />, 
-          color: 'text-gray-600 bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-800/40 dark:to-gray-700/40 dark:text-gray-400 border border-gray-300 dark:border-gray-600',
+          icon: <AlertCircle className="w-4 h-4" />, 
+          color: 'text-gray-700 bg-gray-100',
+          borderColor: 'border-gray-200',
           text: status
         };
     }
@@ -289,385 +267,328 @@ const TransactionsPage = () => {
     totalAmount: transactions.reduce((sum, t) => sum + (t.status === 'completed' ? t.amount : 0), 0)
   };
 
-  // Render a transaction card for mobile view - Compact
-  const renderTransactionCard = (transaction) => {
-    const status = getStatusDisplay(transaction.status);
-    const expired = transaction.status === 'pending' && isTransactionExpired(transaction.createdAt);
-    
-    return (
-      <div key={transaction._id} className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg p-3 rounded-lg shadow-lg mb-2 border border-emerald-200/50 dark:border-emerald-800/30 hover:shadow-xl transition-all">
-        <div className="flex justify-between items-start mb-2">
-          <div>
-            <div className="font-bold text-gray-900 dark:text-white capitalize text-sm">{transaction.type}</div>
-            <div className="text-gray-500 dark:text-gray-400 text-[10px] font-medium flex items-center mt-0.5">
-              <Calendar className="w-3 h-3 mr-0.5" />
-              {formatDate(transaction.createdAt)}
-            </div>
-          </div>
-          <div className={`flex items-center px-2 py-1 rounded-md text-[10px] font-bold shadow-sm ${status.color}`}>
-            {status.icon}
-            <span className="ml-1">{status.text}</span>
-            {expired && <span className="ml-1 text-red-500 dark:text-red-400">(Expired)</span>}
-          </div>
-        </div>
-        
-        <div className="mb-2">
-          <div className="text-lg font-black text-gray-900 dark:text-white mb-1 flex items-center">
-            <DollarSign className="w-4 h-4 mr-0.5 text-emerald-600" />
-            {formatCurrency(transaction.amount)}
-          </div>
-          <div className="text-[10px] text-gray-500 dark:text-gray-400 break-all bg-gray-100 dark:bg-gray-700 p-2 rounded-md">
-            <span className="font-bold text-gray-700 dark:text-gray-300">Ref:</span> {transaction.reference}
-          </div>
-        </div>
-        
-        {transaction.status === 'pending' && (
-          <div className="mt-2">
-            <button
-              className={`w-full flex justify-center items-center py-2 px-3 rounded-md text-white font-bold text-xs transition-all shadow ${
-                expired 
-                  ? 'bg-gradient-to-r from-gray-400 to-gray-500 dark:from-gray-600 dark:to-gray-700' 
-                  : verifyingId === transaction._id 
-                    ? 'bg-gradient-to-r from-emerald-400 to-teal-500'
-                    : 'bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 transform hover:scale-105'
-              }`}
-              disabled={verifyingId === transaction._id || expired}
-              onClick={() => expired 
-                ? showNotification('Cannot verify this transaction. It has been pending for more than 5 hours. Please contact admin.', 'error')
-                : verifyTransaction(transaction._id, transaction.createdAt)
-              }
-            >
-              {verifyingId === transaction._id ? (
-                <div className="flex items-center">
-                  <div className="w-3 h-3 border-t-2 border-white border-solid rounded-full animate-spin mr-1.5"></div>
-                  Verifying...
-                </div>
-              ) : expired ? (
-                <>
-                  <AlertCircle className="w-3 h-3 mr-1.5" />
-                  Contact Admin
-                </>
-              ) : (
-                <>
-                  <Zap className="w-3 h-3 mr-1.5" />
-                  Verify Now
-                </>
-              )}
-            </button>
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  // Show loading spinner if data is still loading - Compact
+  // Show loading spinner if data is still loading
   if (!userData || !authToken || loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      <div className="flex justify-center items-center min-h-screen bg-gray-50">
         <div className="text-center">
-          <div className="relative w-12 h-12 mx-auto mb-3">
-            <div className="w-12 h-12 rounded-full border-2 border-emerald-100 dark:border-emerald-900"></div>
-            <div className="absolute top-0 w-12 h-12 rounded-full border-2 border-transparent border-t-emerald-500 dark:border-t-emerald-400 animate-spin"></div>
+          <div className="relative w-12 h-12 mx-auto mb-4">
+            <div className="w-12 h-12 rounded-full border-2 border-gray-200"></div>
+            <div className="absolute top-0 w-12 h-12 rounded-full border-2 border-transparent border-t-blue-600 animate-spin"></div>
           </div>
-          <div className="flex items-center justify-center space-x-1 mb-2">
-            <div className="w-6 h-6 rounded-md bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
-              <Zap className="w-3 h-3 text-white" strokeWidth={2} />
-            </div>
-            <h1 className="text-base font-black bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 text-transparent bg-clip-text">
-              CHEAPDATE
-            </h1>
-          </div>
-          <p className="text-gray-600 dark:text-gray-300 font-medium text-xs">Loading transactions...</p>
+          <h1 className="text-xl font-bold text-gray-900 mb-2">DataSpot</h1>
+          <p className="text-gray-500 text-sm">Loading transactions...</p>
         </div>
       </div>
     );
   }
   
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      <div className="container mx-auto px-3 py-3 max-w-6xl">
-        {/* Header - Compact */}
-        <div className="mb-4 bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-600 rounded-lg shadow-lg p-3 transform hover:scale-105 transition-all">
-          <div className="flex justify-between items-center relative">
-            {/* Background Pattern */}
-            <div className="absolute inset-0 opacity-10">
-              <div className="absolute top-2 right-2">
-                <Activity className="w-5 h-5 text-white animate-pulse" />
-              </div>
+    <div className="min-h-screen bg-gray-50">
+      {/* Navigation Bar */}
+      <nav className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center">
+              <h1 className="text-2xl font-bold text-gray-900">DataSpot</h1>
             </div>
-            
-            <div className="relative z-10">
-              <div className="flex items-center space-x-2 mb-1">
-                <div className="w-7 h-7 rounded-md bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                  <Zap className="w-4 h-4 text-white" strokeWidth={2} />
-                </div>
-                <h1 className="text-lg font-black text-white">Transaction History</h1>
-              </div>
-              <p className="text-white/90 text-xs font-medium">Track your CHEAPDATE journey</p>
+            <div className="flex items-center space-x-4">
+              <span className="text-sm text-gray-500">Transaction History</span>
+              <Shield className="w-5 h-5 text-gray-400" />
             </div>
-            
-            <button 
-              onClick={toggleDarkMode} 
-              className="relative z-10 p-2 rounded-md bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-all border border-white/30 shadow transform hover:scale-105"
-              aria-label="Toggle dark mode"
-            >
-              {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-            </button>
           </div>
         </div>
+      </nav>
 
-        {/* Transaction Stats - Compact */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
-          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg p-2.5 rounded-lg shadow border border-emerald-200/50 dark:border-emerald-800/30">
-            <div className="flex items-center">
-              <div className="bg-emerald-100 dark:bg-emerald-900/30 p-1.5 rounded-md mr-2">
-                <Activity className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-              </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Page Header */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-2">Transactions</h2>
+          <p className="text-gray-600">View and manage your payment history</p>
+        </div>
+
+        {/* Transaction Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
               <div>
-                <p className="text-[10px] font-bold text-gray-600 dark:text-gray-400">Total</p>
-                <p className="text-sm font-black text-gray-900 dark:text-white">{transactionStats.total}</p>
+                <p className="text-sm font-medium text-gray-600">Total Transactions</p>
+                <p className="text-2xl font-semibold text-gray-900 mt-1">{transactionStats.total}</p>
+              </div>
+              <div className="p-3 bg-blue-100 rounded-lg">
+                <Activity className="w-6 h-6 text-blue-600" />
               </div>
             </div>
           </div>
           
-          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg p-2.5 rounded-lg shadow border border-emerald-200/50 dark:border-emerald-800/30">
-            <div className="flex items-center">
-              <div className="bg-emerald-100 dark:bg-emerald-900/30 p-1.5 rounded-md mr-2">
-                <CheckCircle className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-              </div>
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
               <div>
-                <p className="text-[10px] font-bold text-gray-600 dark:text-gray-400">Completed</p>
-                <p className="text-sm font-black text-gray-900 dark:text-white">{transactionStats.completed}</p>
+                <p className="text-sm font-medium text-gray-600">Completed</p>
+                <p className="text-2xl font-semibold text-gray-900 mt-1">{transactionStats.completed}</p>
+              </div>
+              <div className="p-3 bg-green-100 rounded-lg">
+                <CheckCircle className="w-6 h-6 text-green-600" />
               </div>
             </div>
           </div>
           
-          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg p-2.5 rounded-lg shadow border border-emerald-200/50 dark:border-emerald-800/30">
-            <div className="flex items-center">
-              <div className="bg-yellow-100 dark:bg-yellow-900/30 p-1.5 rounded-md mr-2">
-                <Clock className="w-3.5 h-3.5 text-yellow-600 dark:text-yellow-400" />
-              </div>
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
               <div>
-                <p className="text-[10px] font-bold text-gray-600 dark:text-gray-400">Pending</p>
-                <p className="text-sm font-black text-gray-900 dark:text-white">{transactionStats.pending}</p>
+                <p className="text-sm font-medium text-gray-600">Pending</p>
+                <p className="text-2xl font-semibold text-gray-900 mt-1">{transactionStats.pending}</p>
+              </div>
+              <div className="p-3 bg-yellow-100 rounded-lg">
+                <Clock className="w-6 h-6 text-yellow-600" />
               </div>
             </div>
           </div>
           
-          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg p-2.5 rounded-lg shadow border border-emerald-200/50 dark:border-emerald-800/30">
-            <div className="flex items-center">
-              <div className="bg-teal-100 dark:bg-teal-900/30 p-1.5 rounded-md mr-2">
-                <TrendingUp className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
-              </div>
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
               <div>
-                <p className="text-[10px] font-bold text-gray-600 dark:text-gray-400">Total Value</p>
-                <p className="text-xs font-black text-gray-900 dark:text-white">{formatCurrency(transactionStats.totalAmount)}</p>
+                <p className="text-sm font-medium text-gray-600">Total Value</p>
+                <p className="text-xl font-semibold text-gray-900 mt-1">{formatCurrency(transactionStats.totalAmount)}</p>
+              </div>
+              <div className="p-3 bg-indigo-100 rounded-lg">
+                <TrendingUp className="w-6 h-6 text-indigo-600" />
               </div>
             </div>
           </div>
         </div>
         
-        {/* Filters - Compact */}
-        <div className="mb-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-lg shadow p-2.5 border border-emerald-200/50 dark:border-emerald-800/30">
-          <div className="flex flex-col sm:flex-row justify-between items-center space-y-2 sm:space-y-0 sm:space-x-2">
-            <div className="flex items-center space-x-2">
-              <div className="bg-emerald-100 dark:bg-emerald-900/30 p-1.5 rounded-md">
-                <Filter className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+        {/* Filters and Actions Bar */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+          <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+            <div className="flex items-center space-x-4 w-full sm:w-auto">
+              <div className="flex items-center space-x-2">
+                <Filter className="w-5 h-5 text-gray-400" />
+                <select
+                  className="border border-gray-300 rounded-lg py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                  value={statusFilter}
+                  onChange={handleStatusChange}
+                >
+                  <option value="">All Status</option>
+                  <option value="pending">Pending</option>
+                  <option value="completed">Completed</option>
+                  <option value="failed">Failed</option>
+                </select>
               </div>
-              <select
-                className="border rounded-md py-1.5 px-2 bg-white/80 dark:bg-gray-800/80 text-gray-700 dark:text-gray-300 border-emerald-300 dark:border-emerald-700 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all font-medium backdrop-blur-sm text-xs"
-                value={statusFilter}
-                onChange={handleStatusChange}
-              >
-                <option value="">All Transactions</option>
-                <option value="pending">Pending</option>
-                <option value="completed">Completed</option>
-                <option value="failed">Failed</option>
-              </select>
             </div>
             
             <button 
               onClick={fetchTransactions} 
-              className="flex items-center space-x-1 bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-3 py-1.5 rounded-md hover:from-emerald-600 hover:to-teal-700 transition-all shadow font-bold transform hover:scale-105 text-xs"
+              className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
             >
-              <RefreshCw className="w-3 h-3" />
+              <RefreshCw className="w-4 h-4" />
               <span>Refresh</span>
             </button>
           </div>
         </div>
         
-        {/* Notification - Compact */}
+        {/* Notification */}
         {notification.show && (
-          <div className={`mb-3 p-2 rounded-lg flex items-center shadow backdrop-blur-lg border text-xs ${
+          <div className={`mb-6 p-4 rounded-lg border ${
             notification.type === 'success' 
-              ? 'bg-emerald-100/80 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border-emerald-300 dark:border-emerald-700' 
-              : 'bg-red-100/80 dark:bg-red-900/30 text-red-700 dark:text-red-400 border-red-300 dark:border-red-700'
-          } transition-all`}>
-            {notification.type === 'success' ? (
-              <CheckCircle className="w-3 h-3 mr-2" />
-            ) : (
-              <AlertCircle className="w-3 h-3 mr-2" />
-            )}
-            <span className="font-medium">{notification.message}</span>
-          </div>
-        )}
-        
-        {/* Error alert - Compact */}
-        {error && (
-          <div className="mb-3 p-2 bg-red-100/80 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-lg flex items-center transition-all backdrop-blur-lg border border-red-300 dark:border-red-700 shadow text-xs">
-            <AlertCircle className="w-3 h-3 mr-2" />
-            <span className="font-medium">{error}</span>
-          </div>
-        )}
-        
-        {/* Mobile view - Card layout - Compact */}
-        <div className="md:hidden">
-          {loading ? (
-            <div className="flex justify-center py-6">
-              <div className="relative w-8 h-8">
-                <div className="w-8 h-8 rounded-full border-2 border-emerald-100 dark:border-emerald-900"></div>
-                <div className="absolute top-0 w-8 h-8 rounded-full border-2 border-transparent border-t-emerald-500 dark:border-t-emerald-400 animate-spin"></div>
-              </div>
-            </div>
-          ) : transactions.length === 0 ? (
-            <div className="text-center py-10 bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-lg shadow border border-emerald-200/50 dark:border-emerald-800/30">
-              <div className="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg flex items-center justify-center mx-auto mb-2">
-                <Search className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-              </div>
-              <p className="text-gray-500 dark:text-gray-400 text-xs font-medium">No transactions found</p>
-            </div>
-          ) : (
-            transactions.map(transaction => renderTransactionCard(transaction))
-          )}
-        </div>
-        
-        {/* Desktop view - Table layout - Compact */}
-        <div className="hidden md:block overflow-x-auto bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-lg shadow-lg transition-all border border-emerald-200/50 dark:border-emerald-800/30">
-          <table className="min-w-full divide-y divide-emerald-200 dark:divide-emerald-800">
-            <thead className="bg-gradient-to-r from-emerald-100 to-teal-100 dark:from-emerald-900/30 dark:to-teal-900/30">
-              <tr>
-                <th className="px-3 py-2 text-left text-[10px] font-black text-emerald-700 dark:text-emerald-300 uppercase tracking-wider">Date</th>
-                <th className="px-3 py-2 text-left text-[10px] font-black text-emerald-700 dark:text-emerald-300 uppercase tracking-wider">Type</th>
-                <th className="px-3 py-2 text-left text-[10px] font-black text-emerald-700 dark:text-emerald-300 uppercase tracking-wider">Amount</th>
-                <th className="px-3 py-2 text-left text-[10px] font-black text-emerald-700 dark:text-emerald-300 uppercase tracking-wider">Reference</th>
-                <th className="px-3 py-2 text-left text-[10px] font-black text-emerald-700 dark:text-emerald-300 uppercase tracking-wider">Status</th>
-                <th className="px-3 py-2 text-left text-[10px] font-black text-emerald-700 dark:text-emerald-300 uppercase tracking-wider">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white/80 dark:bg-gray-800/80 divide-y divide-emerald-200/50 dark:divide-emerald-800/50">
-              {loading ? (
-                <tr>
-                  <td colSpan={6} className="px-3 py-6 text-center">
-                    <div className="flex justify-center">
-                      <div className="relative w-8 h-8">
-                        <div className="w-8 h-8 rounded-full border-2 border-emerald-100 dark:border-emerald-900"></div>
-                        <div className="absolute top-0 w-8 h-8 rounded-full border-2 border-transparent border-t-emerald-500 dark:border-t-emerald-400 animate-spin"></div>
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-              ) : transactions.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="px-3 py-10 text-center">
-                    <div className="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg flex items-center justify-center mx-auto mb-2">
-                      <Search className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                    </div>
-                    <p className="text-gray-500 dark:text-gray-400 text-xs font-medium">No transactions found</p>
-                  </td>
-                </tr>
+              ? 'bg-green-50 border-green-200 text-green-800' 
+              : 'bg-red-50 border-red-200 text-red-800'
+          }`}>
+            <div className="flex items-start">
+              {notification.type === 'success' ? (
+                <CheckCircle className="w-5 h-5 mt-0.5 mr-3 flex-shrink-0" />
               ) : (
-                transactions.map((transaction) => {
-                  const status = getStatusDisplay(transaction.status);
-                  const expired = transaction.status === 'pending' && isTransactionExpired(transaction.createdAt);
-                  
-                  return (
-                    <tr key={transaction._id} className="hover:bg-emerald-50/50 dark:hover:bg-emerald-900/20 transition-all">
-                      <td className="px-3 py-2 whitespace-nowrap text-[10px] text-gray-700 dark:text-gray-300 font-medium">
-                        {formatDate(transaction.createdAt)}
-                      </td>
-                      <td className="px-3 py-2 whitespace-nowrap text-[10px] text-gray-700 dark:text-gray-300 capitalize font-bold">
-                        {transaction.type}
-                      </td>
-                      <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-700 dark:text-gray-300 font-black">
-                        {formatCurrency(transaction.amount)}
-                      </td>
-                      <td className="px-3 py-2 whitespace-nowrap text-[10px] text-gray-500 dark:text-gray-400 font-medium">
-                        <div className="max-w-[120px] overflow-hidden text-ellipsis">
-                          {transaction.reference}
-                        </div>
-                      </td>
-                      <td className="px-3 py-2 whitespace-nowrap">
-                        <div className={`inline-flex items-center px-2 py-1 rounded-md text-[10px] font-bold shadow-sm ${status.color}`}>
-                          {status.icon}
-                          <span className="ml-1">{status.text}</span>
-                          {expired && (
-                            <span className="ml-1 text-red-500 dark:text-red-400">(Expired)</span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-3 py-2 whitespace-nowrap text-[10px]">
-                        {transaction.status === 'pending' && (
-                          <button
-                            className={`inline-flex items-center px-2 py-1 border rounded-md focus:outline-none focus:ring-1 focus:ring-offset-1 transition-all font-bold transform hover:scale-105 text-[10px] ${
-                              expired 
-                                ? 'border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-gray-500' 
-                                : 'border-emerald-500 dark:border-emerald-400 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 focus:ring-emerald-500 disabled:opacity-50 shadow-sm'
-                            }`}
-                            disabled={verifyingId === transaction._id || expired}
-                            onClick={() => expired 
-                              ? showNotification('Cannot verify this transaction. It has been pending for more than 5 hours. Please contact admin.', 'error')
-                              : verifyTransaction(transaction._id, transaction.createdAt)
-                            }
-                          >
-                            {verifyingId === transaction._id ? (
-                              <div className="flex items-center">
-                                <div className="w-2.5 h-2.5 border-t border-emerald-500 dark:border-emerald-400 border-solid rounded-full animate-spin mr-1"></div>
-                                Verifying...
-                              </div>
-                            ) : expired ? (
-                              <>
-                                <AlertCircle className="w-2.5 h-2.5 mr-1 text-red-500 dark:text-red-400" />
-                                Contact Admin
-                              </>
-                            ) : (
-                              <>
-                                <Zap className="w-2.5 h-2.5 mr-1" />
-                                Verify
-                              </>
-                            )}
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })
+                <AlertCircle className="w-5 h-5 mt-0.5 mr-3 flex-shrink-0" />
               )}
-            </tbody>
-          </table>
+              <span className="text-sm">{notification.message}</span>
+            </div>
+          </div>
+        )}
+        
+        {/* Error alert */}
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="flex items-start">
+              <AlertCircle className="w-5 h-5 text-red-600 mt-0.5 mr-3 flex-shrink-0" />
+              <span className="text-sm text-red-800">{error}</span>
+            </div>
+          </div>
+        )}
+        
+        {/* Transactions Table */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Transaction ID
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Date
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Type
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Amount
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {loading ? (
+                  <tr>
+                    <td colSpan={6} className="px-6 py-12 text-center">
+                      <div className="flex justify-center">
+                        <div className="relative w-8 h-8">
+                          <div className="w-8 h-8 rounded-full border-2 border-gray-200"></div>
+                          <div className="absolute top-0 w-8 h-8 rounded-full border-2 border-transparent border-t-blue-600 animate-spin"></div>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                ) : transactions.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="px-6 py-12 text-center">
+                      <Search className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                      <p className="text-gray-500">No transactions found</p>
+                    </td>
+                  </tr>
+                ) : (
+                  transactions.map((transaction) => {
+                    const status = getStatusDisplay(transaction.status);
+                    const expired = transaction.status === 'pending' && isTransactionExpired(transaction.createdAt);
+                    
+                    return (
+                      <tr key={transaction._id} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-900 font-mono">
+                            {transaction.reference.substring(0, 12)}...
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">
+                            {formatDate(transaction.createdAt)}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-900 capitalize font-medium">
+                            {transaction.type}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm font-semibold text-gray-900">
+                            {formatCurrency(transaction.amount)}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${status.color} border ${status.borderColor}`}>
+                            {status.icon}
+                            <span className="ml-1.5">{status.text}</span>
+                            {expired && (
+                              <span className="ml-1 text-red-600">(Expired)</span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                          {transaction.status === 'pending' && (
+                            <button
+                              className={`inline-flex items-center px-3 py-1.5 border rounded-md text-sm font-medium transition-colors ${
+                                expired 
+                                  ? 'border-gray-300 text-gray-500 bg-gray-50 cursor-not-allowed' 
+                                  : verifyingId === transaction._id
+                                    ? 'border-blue-300 text-blue-700 bg-blue-50'
+                                    : 'border-blue-600 text-blue-600 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'
+                              }`}
+                              disabled={verifyingId === transaction._id || expired}
+                              onClick={() => expired 
+                                ? showNotification('Cannot verify expired transaction. Please contact support.', 'error')
+                                : verifyTransaction(transaction._id, transaction.createdAt)
+                              }
+                            >
+                              {verifyingId === transaction._id ? (
+                                <>
+                                  <RefreshCw className="w-3 h-3 mr-1.5 animate-spin" />
+                                  Verifying...
+                                </>
+                              ) : expired ? (
+                                <>
+                                  <AlertCircle className="w-3 h-3 mr-1.5" />
+                                  Expired
+                                </>
+                              ) : (
+                                <>
+                                  <CheckCircle className="w-3 h-3 mr-1.5" />
+                                  Verify
+                                </>
+                              )}
+                            </button>
+                          )}
+                          {transaction.status === 'completed' && (
+                            <button className="text-gray-400 hover:text-gray-600 transition-colors">
+                              <MoreVertical className="w-5 h-5" />
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
         
-        {/* Pagination - Compact */}
+        {/* Pagination */}
         {pagination.pages > 1 && (
-          <div className="flex items-center justify-center mt-4 space-x-2">
-            <button
-              onClick={() => handlePageChange(pagination.page - 1)}
-              disabled={pagination.page === 1}
-              className="p-2 rounded-md border border-emerald-300 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 disabled:opacity-50 transition-all bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg shadow transform hover:scale-105"
-            >
-              <ChevronLeft className="w-3.5 h-3.5" />
-            </button>
-            
-            <div className="text-xs font-bold text-gray-700 dark:text-gray-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg px-3 py-2 rounded-md shadow border border-emerald-200/50 dark:border-emerald-800/30">
-              <span className="text-emerald-600 dark:text-emerald-400">{pagination.page}</span> of <span className="text-emerald-600 dark:text-emerald-400">{pagination.pages}</span>
+          <div className="flex items-center justify-between mt-6 px-4">
+            <div className="text-sm text-gray-700">
+              Showing page <span className="font-medium">{pagination.page}</span> of{' '}
+              <span className="font-medium">{pagination.pages}</span>
             </div>
             
-            <button
-              onClick={() => handlePageChange(pagination.page + 1)}
-              disabled={pagination.page === pagination.pages}
-              className="p-2 rounded-md border border-emerald-300 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 disabled:opacity-50 transition-all bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg shadow transform hover:scale-105"
-            >
-              <ChevronRight className="w-3.5 h-3.5" />
-            </button>
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => handlePageChange(pagination.page - 1)}
+                disabled={pagination.page === 1}
+                className="px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              
+              <div className="flex space-x-1">
+                {[...Array(Math.min(5, pagination.pages))].map((_, i) => {
+                  const pageNum = i + 1;
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => handlePageChange(pageNum)}
+                      className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                        pagination.page === pageNum
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                      }`}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                })}
+              </div>
+              
+              <button
+                onClick={() => handlePageChange(pagination.page + 1)}
+                disabled={pagination.page === pagination.pages}
+                className="px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         )}
       </div>

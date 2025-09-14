@@ -12,17 +12,17 @@ import {
   AlertCircle,
   RefreshCw,
   Info,
-  Zap,
-  Star,
-  Flame,
+  Wallet,
   Shield,
-  Target,
-  TrendingUp
+  Send,
+  Activity,
+  Circle,
+  ChevronRight
 } from 'lucide-react';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://kingpromise.onrender.com/api/v1';
 
-const DataHustleDeposit = () => {
+const DataSpotDeposit = () => {
   // States
   const [amount, setAmount] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -258,319 +258,359 @@ const DataHustleDeposit = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-gradient-to-br from-emerald-400/10 to-teal-400/10 blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full bg-gradient-to-br from-purple-400/10 to-pink-400/10 blur-3xl animate-pulse delay-1000"></div>
-      </div>
-
-      <div className="relative z-10 min-h-screen flex items-center justify-center p-4">
-        <div className="w-full max-w-md">
-          {/* Header Section */}
-          <div className="text-center mb-8">
-            <div className="flex items-center justify-center space-x-3 mb-4">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-xl">
-                <Zap className="w-6 h-6 text-white" strokeWidth={2.5} />
-              </div>
-              <h1 className="text-3xl font-black bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 text-transparent bg-clip-text">
-                DATAHUSTLE
+    <div className="min-h-screen bg-gray-50">
+      {/* Navigation Bar */}
+      <nav className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center">
+              <h1 className="text-2xl font-bold text-gray-900">
+                DataSpot
               </h1>
             </div>
-            <p className="text-white/80 text-lg font-medium">Power Up Your Hustle</p>
+            <div className="flex items-center space-x-4">
+              <span className="text-sm text-gray-500">Secure Payment Gateway</span>
+              <Shield className="w-5 h-5 text-gray-400" />
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <div className="max-w-2xl mx-auto px-4 py-12">
+        {/* Progress Steps */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between">
+            {[
+              { num: 1, label: 'Payment Details' },
+              { num: 2, label: 'Verification' },
+              { num: 3, label: 'Confirmation' }
+            ].map((s, index) => (
+              <React.Fragment key={s.num}>
+                <div className="flex items-center">
+                  <div className={`
+                    w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold
+                    ${step >= s.num 
+                      ? 'bg-blue-600 text-white' 
+                      : 'bg-gray-200 text-gray-500'
+                    }
+                  `}>
+                    {step > s.num ? <CheckCircle2 className="w-5 h-5" /> : s.num}
+                  </div>
+                  <span className={`ml-3 text-sm font-medium ${
+                    step >= s.num ? 'text-gray-900' : 'text-gray-500'
+                  }`}>
+                    {s.label}
+                  </span>
+                </div>
+                {index < 2 && (
+                  <div className={`flex-1 h-0.5 mx-4 ${
+                    step > s.num ? 'bg-blue-600' : 'bg-gray-200'
+                  }`} />
+                )}
+              </React.Fragment>
+            ))}
+          </div>
+        </div>
+
+        {/* Main Card */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+          {/* Card Header */}
+          <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <Wallet className="w-6 h-6 text-gray-700" />
+                <h2 className="text-lg font-semibold text-gray-900">
+                  {step === 1 && 'Add Funds to Wallet'}
+                  {step === 2 && 'Verify Your Transaction'}
+                  {step === 3 && 'Complete Payment'}
+                </h2>
+              </div>
+              {step === 1 && (
+                <span className="text-sm text-gray-500">
+                  Min: GHS 10
+                </span>
+              )}
+            </div>
           </div>
 
-          {/* Main Card */}
-          <div className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/20 overflow-hidden shadow-2xl">
-            {/* Header */}
-            <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 p-8 relative overflow-hidden">
-              <div className="absolute top-4 right-4 w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
-                <Star className="w-6 h-6 text-white animate-pulse" />
-              </div>
-              <div className="absolute bottom-4 left-4 w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
-                <Flame className="w-4 h-4 text-white animate-bounce" />
-              </div>
-              
-              <div className="relative z-10">
-                <div className="flex items-center space-x-3 mb-3">
-                  <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/30">
-                    <CreditCard className="w-8 h-8 text-white" strokeWidth={2} />
-                  </div>
-                  <div>
-                    <h2 className="text-3xl font-black text-white">Deposit Funds</h2>
-                    <p className="text-white/90 text-lg font-medium">Fuel your success</p>
-                  </div>
+          <div className="p-6">
+            {/* Error Display */}
+            {error && (
+              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                <div className="flex items-start">
+                  <XCircle className="w-5 h-5 text-red-600 mt-0.5 mr-3 flex-shrink-0" />
+                  <span className="text-sm text-red-800">{error}</span>
                 </div>
               </div>
-            </div>
+            )}
 
-            <div className="p-8">
-              {/* Error Display */}
-              {error && (
-                <div className="mb-6 p-4 rounded-2xl flex items-start bg-gradient-to-r from-red-100/10 to-red-200/10 border border-red-500/30 backdrop-blur-sm">
-                  <div className="w-6 h-6 rounded-lg bg-red-500/20 flex items-center justify-center mr-3 flex-shrink-0 mt-0.5">
-                    <XCircle className="w-4 h-4 text-red-400" />
-                  </div>
-                  <span className="text-red-200 font-medium">{error}</span>
+            {/* Success Display */}
+            {success && (
+              <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                <div className="flex items-start">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 mr-3 flex-shrink-0" />
+                  <span className="text-sm text-green-800">{success}</span>
                 </div>
-              )}
+              </div>
+            )}
 
-              {/* Success Display */}
-              {success && (
-                <div className="mb-6 p-4 rounded-2xl flex items-start bg-gradient-to-r from-emerald-100/10 to-emerald-200/10 border border-emerald-500/30 backdrop-blur-sm">
-                  <div className="w-6 h-6 rounded-lg bg-emerald-500/20 flex items-center justify-center mr-3 flex-shrink-0 mt-0.5">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                  </div>
-                  <span className="text-emerald-200 font-medium">{success}</span>
-                </div>
-              )}
-
-              {/* Step 1: Deposit Form */}
-              {step === 1 && (
-                <form onSubmit={handleDepositSubmit} className="space-y-6">
-                  <div>
-                    <label htmlFor="amount" className="block text-lg font-bold mb-3 text-white">
-                      Amount (GHS)
-                    </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <span className="text-emerald-400 text-xl font-bold">₵</span>
-                      </div>
-                      <input
-                        type="number"
-                        id="amount"
-                        value={amount}
-                        onChange={(e) => setAmount(e.target.value)}
-                        placeholder="0.00"
-                        className="pl-12 pr-4 py-4 block w-full rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder-white/50 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 font-bold text-lg"
-                        step="0.01"
-                        min="1"
-                      />
+            {/* Step 1: Deposit Form */}
+            {step === 1 && (
+              <form onSubmit={handleDepositSubmit} className="space-y-6">
+                <div>
+                  <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-2">
+                    Amount (GHS)
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <span className="text-gray-500 text-sm">GHS</span>
                     </div>
+                    <input
+                      type="number"
+                      id="amount"
+                      value={amount}
+                      onChange={(e) => setAmount(e.target.value)}
+                      placeholder="0.00"
+                      className="pl-12 pr-3 py-2.5 block w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+                      step="0.01"
+                      min="10"
+                    />
                   </div>
+                  <p className="mt-1.5 text-xs text-gray-500">
+                    Enter the amount you want to deposit to your wallet
+                  </p>
+                </div>
 
-                  <div>
-                    <label htmlFor="phoneNumber" className="block text-lg font-bold mb-3 text-white">
-                      Mobile Money Number
-                    </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <Phone size={20} className="text-emerald-400" />
-                      </div>
-                      <input
-                        type="tel"
-                        id="phoneNumber"
-                        value={phoneNumber}
-                        onChange={(e) => setPhoneNumber(e.target.value)}
-                        placeholder="02XXXXXXXX"
-                        className="pl-12 pr-4 py-4 block w-full rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder-white/50 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 font-medium"
-                      />
+                <div>
+                  <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 mb-2">
+                    Mobile Money Number
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Phone className="w-5 h-5 text-gray-400" />
                     </div>
+                    <input
+                      type="tel"
+                      id="phoneNumber"
+                      value={phoneNumber}
+                      onChange={(e) => setPhoneNumber(e.target.value)}
+                      placeholder="02XXXXXXXX"
+                      className="pl-10 pr-3 py-2.5 block w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+                    />
                   </div>
+                  <p className="mt-1.5 text-xs text-gray-500">
+                    Enter your mobile money registered phone number
+                  </p>
+                </div>
 
+                <div>
+                  <label htmlFor="network" className="block text-sm font-medium text-gray-700 mb-2">
+                    Network Provider
+                  </label>
+                  <select
+                    id="network"
+                    value={network}
+                    onChange={(e) => setNetwork(e.target.value)}
+                    className="py-2.5 px-3 block w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+                  >
+                    <option value="mtn">MTN Mobile Money</option>
+                    <option value="vodafone">Vodafone Cash</option>
+                    <option value="at">AirtelTigo Money</option>
+                  </select>
+                </div>
+
+                <div className="pt-4">
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full flex items-center justify-center py-3 px-4 rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 font-medium"
+                  >
+                    {loading ? (
+                      <>
+                        <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                        Processing...
+                      </>
+                    ) : (
+                      <>
+                        Continue
+                        <ChevronRight className="w-5 h-5 ml-2" />
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {/* Step 2: OTP Verification */}
+            {step === 2 && otpRequired && (
+              <div className="space-y-6">
+                <div className="text-center">
+                  <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                    <Smartphone className="w-8 h-8 text-blue-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Enter Verification Code</h3>
+                  <p className="text-sm text-gray-600">
+                    We've sent a 6-digit code to {phoneNumber}
+                  </p>
+                </div>
+
+                <form onSubmit={handleOtpSubmit} className="space-y-6">
                   <div>
-                    <label htmlFor="network" className="block text-lg font-bold mb-3 text-white">
-                      Mobile Network
+                    <label htmlFor="otpCode" className="block text-sm font-medium text-gray-700 mb-2">
+                      OTP Code
                     </label>
-                    <select
-                      id="network"
-                      value={network}
-                      onChange={(e) => setNetwork(e.target.value)}
-                      className="py-4 px-4 block w-full rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 font-medium"
-                    >
-                      <option value="mtn" className="bg-gray-800 text-white">MTN Mobile Money</option>
-                      <option value="vodafone" className="bg-gray-800 text-white">Vodafone Cash</option>
-                      <option value="at" className="bg-gray-800 text-white">AirtelTigo Money</option>
-                    </select>
+                    <input
+                      type="text"
+                      id="otpCode"
+                      value={otpCode}
+                      onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').substring(0, 6))}
+                      placeholder="000000"
+                      maxLength={6}
+                      className="py-3 px-4 block w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-center text-xl tracking-widest font-semibold text-gray-900"
+                    />
+                    <p className="mt-2 text-xs text-gray-500 text-center">
+                      Enter the 6-digit code from your SMS
+                    </p>
                   </div>
 
                   <button
                     type="submit"
-                    disabled={loading}
-                    className="w-full flex items-center justify-center py-4 px-6 rounded-2xl shadow-xl text-white bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 focus:outline-none focus:ring-4 focus:ring-emerald-500/50 disabled:opacity-50 transition-all duration-300 transform hover:scale-105 font-bold text-lg"
+                    disabled={loading || otpCode.length !== 6}
+                    className="w-full flex items-center justify-center py-3 px-4 rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 font-medium"
                   >
                     {loading ? (
                       <>
-                        <div className="mr-3 animate-spin">
-                          <Loader2 className="w-6 h-6" />
-                        </div>
-                        Processing Hustle...
+                        <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                        Verifying...
                       </>
                     ) : (
                       <>
-                        <Zap className="mr-3 w-6 h-6" />
-                        Power Up Now
-                        <ArrowRight className="ml-3 w-6 h-6" />
+                        Verify Code
+                        <ChevronRight className="w-5 h-5 ml-2" />
                       </>
                     )}
                   </button>
-                </form>
-              )}
-
-              {/* Step 2: OTP Verification */}
-              {step === 2 && otpRequired && (
-                <div className="space-y-6">
-                  <div className="text-center mb-6">
-                    <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl mb-4 bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-emerald-500/30">
-                      <Smartphone size={40} className="text-emerald-400" />
-                    </div>
-                    <h3 className="text-2xl font-black text-white mb-2">OTP Verification</h3>
-                    <p className="text-white/70 font-medium">
-                      We sent a 6-digit code to {phoneNumber}
-                    </p>
-                  </div>
-
-                  <form onSubmit={handleOtpSubmit} className="space-y-6">
-                    <div>
-                      <label htmlFor="otpCode" className="block text-lg font-bold mb-3 text-white">
-                        Enter 6-digit OTP Code
-                      </label>
-                      <input
-                        type="text"
-                        id="otpCode"
-                        value={otpCode}
-                        onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').substring(0, 6))}
-                        placeholder="XXXXXX"
-                        maxLength={6}
-                        className="py-4 px-4 block w-full rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder-white/50 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-center tracking-widest text-2xl font-bold"
-                      />
-                    </div>
-
-                    <button
-                      type="submit"
-                      disabled={loading || otpCode.length !== 6}
-                      className="w-full flex items-center justify-center py-4 px-6 rounded-2xl shadow-xl text-white bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 focus:outline-none focus:ring-4 focus:ring-emerald-500/50 disabled:opacity-50 transition-all duration-300 transform hover:scale-105 font-bold text-lg"
-                    >
-                      {loading ? (
-                        <>
-                          <div className="mr-3 animate-spin">
-                            <Loader2 className="w-6 h-6" />
-                          </div>
-                          Verifying...
-                        </>
-                      ) : (
-                        <>
-                          <Shield className="mr-3 w-6 h-6" />
-                          Verify Code
-                        </>
-                      )}
-                    </button>
-                  </form>
-                </div>
-              )}
-
-              {/* Step 3: Awaiting Payment */}
-              {step === 3 && (
-                <div className="text-center space-y-6">
-                  <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl mb-4 bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-emerald-500/30">
-                    <Target size={40} className="text-emerald-400 animate-pulse" />
-                  </div>
-                  
-                  <h3 className="text-2xl font-black text-white mb-2">
-                    Awaiting Payment Approval
-                  </h3>
-                  
-                  <p className="text-white/70 font-medium mb-6">
-                    Please check your phone and follow the instructions to complete the payment.
-                  </p>
-                  
-                  {checkReminder && (
-                    <div className="p-6 rounded-2xl mb-6 flex items-start bg-gradient-to-r from-emerald-100/10 to-teal-100/10 border border-emerald-500/30 backdrop-blur-sm">
-                      <div className="w-6 h-6 rounded-lg bg-emerald-500/20 flex items-center justify-center mr-3 flex-shrink-0 mt-0.5">
-                        <Info className="w-4 h-4 text-emerald-400" />
-                      </div>
-                      <p className="text-emerald-200 font-bold">
-                        Important: After approving on your phone, click "Check Payment Status" below to complete the transaction.
-                      </p>
-                    </div>
-                  )}
-                  
-                  <div className="mb-6">
-                    <div className="w-full bg-white/10 rounded-full h-3 backdrop-blur-sm">
-                      <div className="bg-gradient-to-r from-emerald-500 to-teal-600 h-3 rounded-full w-full animate-pulse shadow-lg"></div>
-                    </div>
-                  </div>
 
                   <button
-                    onClick={checkTransactionStatus}
-                    disabled={loading}
-                    className="w-full flex items-center justify-center py-4 px-6 rounded-2xl shadow-xl text-white bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 focus:outline-none focus:ring-4 focus:ring-emerald-500/50 disabled:opacity-50 transition-all duration-300 transform hover:scale-105 font-bold text-lg mb-4"
+                    type="button"
+                    onClick={() => setStep(1)}
+                    className="w-full text-sm text-gray-600 hover:text-gray-900 transition-colors"
                   >
-                    {loading ? (
-                      <>
-                        <div className="mr-3 animate-spin">
-                          <Loader2 className="w-6 h-6" />
-                        </div>
-                        Checking Status...
-                      </>
-                    ) : (
-                      <>
-                        <RefreshCw className="mr-3 w-6 h-6" />
-                        Check Payment Status
-                      </>
-                    )}
+                    Back to payment details
                   </button>
-                  
-                  {transactionStatus && (
-                    <div className={`p-4 rounded-2xl backdrop-blur-sm border font-bold ${
-                      transactionStatus === 'completed' 
-                        ? 'bg-gradient-to-r from-emerald-100/10 to-emerald-200/10 border-emerald-500/30 text-emerald-200' 
-                        : transactionStatus === 'failed' 
-                          ? 'bg-gradient-to-r from-red-100/10 to-red-200/10 border-red-500/30 text-red-200' 
-                          : 'bg-gradient-to-r from-yellow-100/10 to-yellow-200/10 border-yellow-500/30 text-yellow-200'
-                    }`}>
-                      Payment status: <span className="font-black">{transactionStatus}</span>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* Progress Footer */}
-            <div className="px-8 py-6 border-t border-white/10 bg-gradient-to-r from-emerald-900/20 to-teal-900/20 backdrop-blur-sm">
-              <div className="flex justify-between items-center mb-3">
-                <div className="text-sm font-bold text-white/70">
-                  Step {step} of 3
-                </div>
-                {step > 1 && (
-                  <button 
-                    onClick={() => setStep(step - 1)}
-                    className="text-sm font-bold text-emerald-400 hover:text-emerald-300 transition-colors"
-                  >
-                    ← Go back
-                  </button>
-                )}
+                </form>
               </div>
-              <div className="w-full bg-white/10 rounded-full h-2 backdrop-blur-sm">
-                <div 
-                  className="bg-gradient-to-r from-emerald-500 to-teal-600 h-2 rounded-full transition-all duration-500 shadow-lg" 
-                  style={{ width: `${(step / 3) * 100}%` }}
-                ></div>
-              </div>
-            </div>
+            )}
 
-            {/* Support Footer */}
-            <div className="p-6 bg-white/5 backdrop-blur-sm border-t border-white/10">
-              <div className="flex items-start space-x-3">
-                <div className="w-6 h-6 rounded-lg bg-emerald-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <AlertCircle className="w-4 h-4 text-emerald-400" />
-                </div>
-                <div className="text-sm text-white/70 font-medium">
-                  <p>
-                    Need help with your deposit? Contact DATAHUSTLE support at{' '}
-                    <a href="mailto:support@datahustle.com" className="text-emerald-400 hover:text-emerald-300 font-bold transition-colors">
-                      support@datahustle.com
-                    </a>{' '}
-                    or call <span className="font-bold text-white">+233 20 000 0000</span>
+            {/* Step 3: Awaiting Payment */}
+            {step === 3 && (
+              <div className="space-y-6">
+                <div className="text-center">
+                  <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                    <Activity className="w-8 h-8 text-blue-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                    Complete Payment on Your Phone
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    Check your phone for the payment prompt and enter your PIN to approve
                   </p>
                 </div>
+                
+                {checkReminder && (
+                  <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                    <div className="flex items-start">
+                      <Info className="w-5 h-5 text-amber-600 mt-0.5 mr-3 flex-shrink-0" />
+                      <div className="text-sm text-amber-800">
+                        <p className="font-medium mb-1">Action Required</p>
+                        <p>After approving the payment on your phone, click "Check Status" below to complete the transaction.</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <button
+                  onClick={checkTransactionStatus}
+                  disabled={loading}
+                  className="w-full flex items-center justify-center py-3 px-4 rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 font-medium"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                      Checking Status...
+                    </>
+                  ) : (
+                    <>
+                      <RefreshCw className="w-5 h-5 mr-2" />
+                      Check Payment Status
+                    </>
+                  )}
+                </button>
+                
+                {transactionStatus && (
+                  <div className={`p-4 rounded-lg border ${
+                    transactionStatus === 'completed' 
+                      ? 'bg-green-50 border-green-200' 
+                      : transactionStatus === 'failed' 
+                        ? 'bg-red-50 border-red-200' 
+                        : 'bg-yellow-50 border-yellow-200'
+                  }`}>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-gray-700">Transaction Status:</span>
+                      <span className={`text-sm font-semibold ${
+                        transactionStatus === 'completed' 
+                          ? 'text-green-700' 
+                          : transactionStatus === 'failed' 
+                            ? 'text-red-700' 
+                            : 'text-yellow-700'
+                      }`}>
+                        {transactionStatus.toUpperCase()}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                <div className="pt-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setStep(1);
+                      setOtpRequired(false);
+                      setTransactionStatus('');
+                    }}
+                    className="w-full text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                  >
+                    Start a new transaction
+                  </button>
+                </div>
               </div>
+            )}
+          </div>
+        </div>
+
+        {/* Security Notice */}
+        <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+          <div className="flex items-start space-x-3">
+            <Shield className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
+            <div className="text-xs text-gray-600">
+              <p className="font-medium mb-1">Secure Transaction</p>
+              <p>Your payment information is encrypted and processed through secure channels. We never store your mobile money PIN.</p>
             </div>
           </div>
+        </div>
+
+        {/* Support */}
+        <div className="mt-8 text-center">
+          <p className="text-sm text-gray-500">
+            Need help? Contact support at{' '}
+            <a href="mailto:support@dataspot.com" className="text-blue-600 hover:text-blue-700 font-medium">
+              support@dataspot.com
+            </a>
+          </p>
         </div>
       </div>
     </div>
   );
 };
 
-export default DataHustleDeposit;
+export default DataSpotDeposit;

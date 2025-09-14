@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { Zap, Sparkles } from 'lucide-react';
+import { Shield, Loader2 } from 'lucide-react';
 
 const AuthGuard = ({ children }) => {
   const router = useRouter();
@@ -10,7 +10,7 @@ const AuthGuard = ({ children }) => {
   const [loading, setLoading] = useState(true);
   
   // List of paths that should bypass authentication
-  const publicPaths = ['/SignIn', '/SignUp'];
+  const publicPaths = ['/SignIn', '/SignUp', '/reset', '/forgot-password'];
   const isPublicPath = publicPaths.includes(pathname);
 
   useEffect(() => {
@@ -23,11 +23,23 @@ const AuthGuard = ({ children }) => {
     
     // Check if user is authenticated
     const userData = localStorage.getItem('userData');
+    const authToken = localStorage.getItem('authToken');
     
-    if (!userData) {
-      router.push('/SignUp');
+    if (!userData || !authToken) {
+      // Redirect to sign in instead of sign up for better UX
+      router.push('/SignIn');
     } else {
-      setIsAuthenticated(true);
+      // Verify the data is valid JSON
+      try {
+        JSON.parse(userData);
+        setIsAuthenticated(true);
+      } catch (error) {
+        console.error('Invalid user data:', error);
+        // Clear invalid data
+        localStorage.removeItem('userData');
+        localStorage.removeItem('authToken');
+        router.push('/SignIn');
+      }
     }
     
     setLoading(false);
@@ -35,31 +47,53 @@ const AuthGuard = ({ children }) => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          {/* Epic Loading Animation */}
-          <div className="relative w-32 h-32 mx-auto mb-8">
-            {/* Outer ring */}
-            <div className="absolute inset-0 rounded-full border-4 border-emerald-200/20"></div>
-            {/* Spinning gradient ring */}
-            <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-emerald-400 border-r-teal-400 animate-spin"></div>
-            {/* Inner pulsing circle */}
-            <div className="absolute inset-4 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 animate-pulse flex items-center justify-center">
-              <Zap className="w-8 h-8 text-white animate-bounce" strokeWidth={2.5} />
+          {/* Simple Loading Animation */}
+          <div className="relative w-16 h-16 mx-auto mb-6">
+            <div className="w-16 h-16 rounded-full border-2 border-gray-200"></div>
+            <div className="absolute top-0 w-16 h-16 rounded-full border-2 border-transparent border-t-blue-600 animate-spin"></div>
+            <div className="absolute inset-4 rounded-full bg-blue-100 flex items-center justify-center">
+              <Shield className="w-6 h-6 text-blue-600" />
             </div>
           </div>
           
-          <div className="space-y-4">
-            <h1 className="text-4xl font-black bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 text-transparent bg-clip-text animate-pulse">
-              DATAHUSTLE
+          <div className="space-y-3">
+            <h1 className="text-2xl font-bold text-gray-900">
+              DataSpot
             </h1>
-            <div className="flex items-center justify-center space-x-2 text-emerald-300">
-              <Sparkles className="w-5 h-5 animate-spin" />
-              <span className="text-lg font-bold">Verifying authentication...</span>
-              <Sparkles className="w-5 h-5 animate-spin" />
+            <div className="flex items-center justify-center space-x-2 text-gray-600">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              <span className="text-sm">Verifying authentication...</span>
+            </div>
+          </div>
+          
+          {/* Progress bar */}
+          <div className="mt-8 w-48 mx-auto">
+            <div className="h-1 bg-gray-200 rounded-full overflow-hidden">
+              <div className="h-full bg-blue-600 rounded-full animate-progress"></div>
             </div>
           </div>
         </div>
+        
+        {/* Add animation styles */}
+        <style jsx>{`
+          @keyframes progress {
+            0% {
+              width: 0%;
+            }
+            50% {
+              width: 70%;
+            }
+            100% {
+              width: 95%;
+            }
+          }
+          
+          .animate-progress {
+            animation: progress 2s ease-out infinite;
+          }
+        `}</style>
       </div>
     );
   }

@@ -4,7 +4,16 @@ import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  CheckCircle, 
+  XCircle, 
+  Clock, 
+  AlertCircle,
+  Loader2,
+  ArrowRight,
+  Shield,
+  Home
+} from 'lucide-react';
 
 function PaymentCallbackClient() {
   const [status, setStatus] = useState('processing');
@@ -84,251 +93,159 @@ function PaymentCallbackClient() {
 
   const statusConfig = {
     processing: {
-      icon: (
-        <div className="relative">
-          {/* Outer rotating ring */}
-          <motion.div
-            className="absolute inset-0"
-            animate={{ rotate: 360 }}
-            transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-          >
-            <div className="w-24 h-24 rounded-full border-4 border-transparent 
-                          border-t-blue-500 border-r-blue-500 dark:border-t-blue-400 dark:border-r-blue-400"></div>
-          </motion.div>
-          
-          {/* Inner rotating ring - opposite direction */}
-          <motion.div
-            className="absolute inset-2"
-            animate={{ rotate: -360 }}
-            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-          >
-            <div className="w-20 h-20 rounded-full border-4 border-transparent 
-                          border-b-purple-500 border-l-purple-500 dark:border-b-purple-400 dark:border-l-purple-400"></div>
-          </motion.div>
-          
-          {/* Center dot */}
-          <motion.div
-            className="absolute inset-8"
-            animate={{ scale: [0.8, 1.2, 0.8] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-          >
-            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 
-                          dark:from-blue-400 dark:to-purple-400"></div>
-          </motion.div>
-        </div>
-      ),
-      bgGradient: 'from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800',
-      cardBg: 'bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg',
-      titleColor: 'text-gray-800 dark:text-gray-100'
+      icon: <Loader2 className="w-16 h-16 text-blue-600 animate-spin" />,
+      iconBg: 'bg-blue-100',
+      statusText: 'Processing',
+      statusColor: 'text-blue-700'
     },
     success: {
-      icon: (
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ type: "spring", stiffness: 200, damping: 10 }}
-          className="relative"
-        >
-          <div className="absolute inset-0 bg-green-500 dark:bg-green-400 rounded-full opacity-20 
-                        animate-ping"></div>
-          <div className="relative bg-gradient-to-br from-green-400 to-emerald-600 
-                        dark:from-green-300 dark:to-emerald-500 rounded-full p-6">
-            <motion.svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-16 w-16 text-white"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: 1 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
-              <motion.path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={3}
-                d="M5 13l4 4L19 7"
-              />
-            </motion.svg>
-          </div>
-        </motion.div>
-      ),
-      bgGradient: 'from-green-50 to-emerald-50 dark:from-gray-900 dark:to-gray-800',
-      cardBg: 'bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg',
-      titleColor: 'text-green-700 dark:text-green-400'
+      icon: <CheckCircle className="w-16 h-16 text-green-600" />,
+      iconBg: 'bg-green-100',
+      statusText: 'Success',
+      statusColor: 'text-green-700'
     },
     failed: {
-      icon: (
-        <motion.div
-          initial={{ scale: 0, rotate: -180 }}
-          animate={{ scale: 1, rotate: 0 }}
-          transition={{ type: "spring", stiffness: 200, damping: 15 }}
-          className="relative"
-        >
-          <div className="absolute inset-0 bg-red-500 dark:bg-red-400 rounded-full opacity-20 
-                        animate-pulse"></div>
-          <div className="relative bg-gradient-to-br from-red-400 to-rose-600 
-                        dark:from-red-300 dark:to-rose-500 rounded-full p-6">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </div>
-        </motion.div>
-      ),
-      bgGradient: 'from-red-50 to-rose-50 dark:from-gray-900 dark:to-gray-800',
-      cardBg: 'bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg',
-      titleColor: 'text-red-700 dark:text-red-400'
+      icon: <XCircle className="w-16 h-16 text-red-600" />,
+      iconBg: 'bg-red-100',
+      statusText: 'Failed',
+      statusColor: 'text-red-700'
     },
     pending: {
-      icon: (
-        <motion.div
-          animate={{ y: [0, -10, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-          className="relative"
-        >
-          <div className="bg-gradient-to-br from-yellow-400 to-orange-500 
-                        dark:from-yellow-300 dark:to-orange-400 rounded-full p-6">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-        </motion.div>
-      ),
-      bgGradient: 'from-yellow-50 to-orange-50 dark:from-gray-900 dark:to-gray-800',
-      cardBg: 'bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg',
-      titleColor: 'text-yellow-700 dark:text-yellow-400'
+      icon: <Clock className="w-16 h-16 text-yellow-600" />,
+      iconBg: 'bg-yellow-100',
+      statusText: 'Pending',
+      statusColor: 'text-yellow-700'
     }
   };
 
   const currentConfig = statusConfig[status] || statusConfig.processing;
 
   return (
-    <div className={`flex items-center justify-center min-h-screen bg-gradient-to-br ${currentConfig.bgGradient} transition-all duration-1000`}>
-      {/* Animated background shapes */}
-      <div className="absolute inset-0 overflow-hidden">
-        <motion.div
-          className="absolute -top-40 -right-40 w-80 h-80 bg-blue-400 dark:bg-blue-600 rounded-full 
-                     mix-blend-multiply dark:mix-blend-screen filter blur-xl opacity-30"
-          animate={{
-            x: [0, 100, 0],
-            y: [0, 50, 0],
-          }}
-          transition={{ duration: 20, repeat: Infinity }}
-        />
-        <motion.div
-          className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-400 dark:bg-purple-600 rounded-full 
-                     mix-blend-multiply dark:mix-blend-screen filter blur-xl opacity-30"
-          animate={{
-            x: [0, -100, 0],
-            y: [0, -50, 0],
-          }}
-          transition={{ duration: 15, repeat: Infinity }}
-        />
-      </div>
+    <div className="min-h-screen bg-gray-50">
+      {/* Navigation Bar */}
+      <nav className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center">
+              <h1 className="text-2xl font-bold text-gray-900">DataSpot</h1>
+            </div>
+            <div className="flex items-center space-x-4">
+              <span className="text-sm text-gray-500">Payment Verification</span>
+              <Shield className="w-5 h-5 text-gray-400" />
+            </div>
+          </div>
+        </div>
+      </nav>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="relative z-10"
-      >
-        <div className={`w-full max-w-md p-8 ${currentConfig.cardBg} rounded-2xl shadow-2xl 
-                      border border-gray-200 dark:border-gray-700 transform transition-all duration-500`}>
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={status}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              transition={{ duration: 0.3 }}
-              className="text-center"
-            >
-              <h1 className={`text-3xl font-bold ${currentConfig.titleColor} mb-8 transition-colors duration-500`}>
-                Payment {status.charAt(0).toUpperCase() + status.slice(1)}
-              </h1>
-              
-              <div className="flex justify-center my-8 h-24">
+      <div className="max-w-md mx-auto px-4 py-16">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          {/* Status Header */}
+          <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-gray-900">
+                Payment {currentConfig.statusText}
+              </h2>
+              <span className={`text-sm font-medium ${currentConfig.statusColor}`}>
+                Status: {currentConfig.statusText}
+              </span>
+            </div>
+          </div>
+
+          <div className="p-8">
+            {/* Icon Display */}
+            <div className="flex justify-center mb-6">
+              <div className={`${currentConfig.iconBg} rounded-full p-6`}>
                 {currentConfig.icon}
               </div>
-              
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.3 }}
-                className="text-lg text-gray-700 dark:text-gray-300 mb-8"
-              >
-                {message}
-              </motion.p>
-              
-              {status === 'success' && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.5 }}
-                >
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                    Redirecting you to dashboard in a few seconds...
-                  </p>
-                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
-                    <motion.div
-                      className="h-full bg-gradient-to-r from-blue-500 to-purple-500"
-                      initial={{ width: "0%" }}
-                      animate={{ width: "100%" }}
-                      transition={{ duration: 5 }}
-                    />
-                  </div>
-                </motion.div>
-              )}
-              
-              {status !== 'processing' && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6 }}
-                  className="mt-8 space-y-4"
-                >
-                  <Link href="/" className="block">
-                    <motion.div
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 
-                               text-white font-medium py-3 px-6 rounded-lg shadow-lg transition-all duration-300"
-                    >
-                      Return to Dashboard
-                    </motion.div>
-                  </Link>
-                  
-                  {status === 'failed' && (
-                    <Link href="/deposit" className="block">
-                      <motion.div
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 
-                                 font-medium transition-colors duration-300"
-                      >
-                        Try Again
-                      </motion.div>
-                    </Link>
-                  )}
-                </motion.div>
-              )}
-              
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.8 }}
-                className="mt-8 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
-              >
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Reference: <span className="font-mono font-medium text-gray-800 dark:text-gray-200">
-                    {reference || 'N/A'}
-                  </span>
+            </div>
+            
+            {/* Message */}
+            <p className="text-center text-gray-600 mb-8">
+              {message}
+            </p>
+            
+            {/* Progress Bar for Success */}
+            {status === 'success' && (
+              <div className="mb-8">
+                <p className="text-sm text-gray-500 text-center mb-3">
+                  Redirecting to dashboard in 5 seconds...
                 </p>
-              </motion.div>
-            </motion.div>
-          </AnimatePresence>
+                <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                  <div className="h-full bg-blue-600 rounded-full animate-progress" />
+                </div>
+              </div>
+            )}
+            
+            {/* Reference Display */}
+            <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 mb-6">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-500">Reference ID:</span>
+                <span className="text-sm font-mono font-medium text-gray-900">
+                  {reference ? reference.substring(0, 20) + '...' : 'N/A'}
+                </span>
+              </div>
+            </div>
+            
+            {/* Action Buttons */}
+            {status !== 'processing' && (
+              <div className="space-y-3">
+                <Link href="/" className="block">
+                  <button className="w-full flex items-center justify-center py-3 px-4 rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors font-medium">
+                    <Home className="w-5 h-5 mr-2" />
+                    Return to Dashboard
+                  </button>
+                </Link>
+                
+                {status === 'failed' && (
+                  <Link href="/deposit" className="block">
+                    <button className="w-full flex items-center justify-center py-3 px-4 rounded-lg text-blue-600 bg-white border border-blue-600 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors font-medium">
+                      Try Again
+                      <ArrowRight className="w-5 h-5 ml-2" />
+                    </button>
+                  </Link>
+                )}
+                
+                {(status === 'failed' || status === 'pending') && (
+                  <div className="text-center">
+                    <a 
+                      href="mailto:support@dataspot.com" 
+                      className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                    >
+                      Contact Support
+                    </a>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
-      </motion.div>
+
+        {/* Support Information */}
+        <div className="mt-6 p-4 bg-white rounded-lg border border-gray-200">
+          <div className="flex items-start space-x-3">
+            <AlertCircle className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
+            <div className="text-sm text-gray-600">
+              <p className="font-medium mb-1">Need Help?</p>
+              <p>If you're experiencing issues with your payment, please contact our support team at{' '}
+                <a href="mailto:support@dataspot.com" className="text-blue-600 hover:text-blue-700 font-medium">
+                  support@dataspot.com
+                </a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <style jsx>{`
+        @keyframes progress {
+          from { width: 0%; }
+          to { width: 100%; }
+        }
+        
+        .animate-progress {
+          animation: progress 5s linear forwards;
+        }
+      `}</style>
     </div>
   );
 }
@@ -336,27 +253,40 @@ function PaymentCallbackClient() {
 // Fallback component to show while loading
 function PaymentCallbackFallback() {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 
-                  dark:from-gray-900 dark:to-gray-800">
-      <div className="w-full max-w-md p-8 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg rounded-2xl 
-                    shadow-2xl border border-gray-200 dark:border-gray-700">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-8">
-            Payment Processing
-          </h1>
-          <div className="flex justify-center my-8">
-            <div className="relative w-24 h-24">
-              <div className="absolute inset-0 animate-spin">
-                <div className="w-24 h-24 rounded-full border-4 border-transparent 
-                              border-t-blue-500 border-r-blue-500 dark:border-t-blue-400 dark:border-r-blue-400"></div>
-              </div>
-              <div className="absolute inset-8">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 
-                              dark:from-blue-400 dark:to-purple-400 animate-pulse"></div>
-              </div>
+    <div className="min-h-screen bg-gray-50">
+      {/* Navigation Bar */}
+      <nav className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center">
+              <h1 className="text-2xl font-bold text-gray-900">DataSpot</h1>
+            </div>
+            <div className="flex items-center space-x-4">
+              <span className="text-sm text-gray-500">Payment Verification</span>
+              <Shield className="w-5 h-5 text-gray-400" />
             </div>
           </div>
-          <p className="text-lg text-gray-700 dark:text-gray-300">Loading payment details...</p>
+        </div>
+      </nav>
+
+      <div className="max-w-md mx-auto px-4 py-16">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+          <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+            <h2 className="text-lg font-semibold text-gray-900">
+              Payment Processing
+            </h2>
+          </div>
+
+          <div className="p-8">
+            <div className="flex justify-center mb-6">
+              <div className="bg-blue-100 rounded-full p-6">
+                <Loader2 className="w-16 h-16 text-blue-600 animate-spin" />
+              </div>
+            </div>
+            <p className="text-center text-gray-600">
+              Loading payment details...
+            </p>
+          </div>
         </div>
       </div>
     </div>

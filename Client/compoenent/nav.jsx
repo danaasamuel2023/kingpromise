@@ -14,15 +14,14 @@ import {
   BarChart2,
   Menu,
   X,
-  Zap,
-  Sparkles,
   Activity,
   TrendingUp,
   Settings,
   Wallet,
   Globe,
   Shield,
-  ArrowRight
+  FileText,
+  HelpCircle
 } from 'lucide-react';
 
 const MobileNavbar = () => {
@@ -32,10 +31,10 @@ const MobileNavbar = () => {
   const [userRole, setUserRole] = useState("user");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState("");
+  const [userEmail, setUserEmail] = useState("");
   
   // Check user role and login status on initial load
   useEffect(() => {
-    // Check user role and login status from localStorage
     try {
       const authToken = localStorage.getItem('authToken');
       const userData = JSON.parse(localStorage.getItem('userData') || '{}');
@@ -51,9 +50,11 @@ const MobileNavbar = () => {
       if (userData && userData.role) {
         setUserRole(userData.role);
         setUserName(userData.name || '');
+        setUserEmail(userData.email || '');
       } else if (dataUser && dataUser.role) {
         setUserRole(dataUser.role);
         setUserName(dataUser.name || '');
+        setUserEmail(dataUser.email || '');
       }
     } catch (error) {
       console.error("Error parsing user data:", error);
@@ -104,14 +105,14 @@ const MobileNavbar = () => {
     };
   }, [isMobileMenuOpen]);
 
-  // Navigation Item Component - Compact Style
+  // Navigation Item Component
   const NavItem = ({ icon, text, path, onClick, disabled = false, badge = null, isActive = false }) => {
-    const itemClasses = `relative flex items-center py-2.5 px-4 ${
+    const itemClasses = `flex items-center py-3 px-4 ${
       disabled 
-        ? 'opacity-30 cursor-not-allowed' 
-        : 'hover:bg-gradient-to-r hover:from-transparent hover:to-emerald-500/5 cursor-pointer'
-    } transition-all duration-300 group ${
-      isActive ? 'bg-gradient-to-r from-transparent to-emerald-500/10 border-r-2 border-emerald-500' : ''
+        ? 'opacity-50 cursor-not-allowed' 
+        : 'hover:bg-gray-50 cursor-pointer'
+    } transition-colors ${
+      isActive ? 'bg-blue-50 border-l-3 border-blue-600' : ''
     }`;
     
     return (
@@ -127,35 +128,35 @@ const MobileNavbar = () => {
           }
         }}
       >
-        <div className={`mr-3 transition-all duration-300 ${isActive ? 'text-emerald-500' : 'text-gray-400 group-hover:text-emerald-400'}`}>
-          {React.cloneElement(icon, { size: 16 })}
+        <div className={`mr-3 ${isActive ? 'text-blue-600' : 'text-gray-500'}`}>
+          {React.cloneElement(icon, { size: 20 })}
         </div>
-        <span className={`font-medium text-xs flex-1 transition-colors ${
-          isActive ? 'text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white'
+        <span className={`font-medium text-sm flex-1 ${
+          isActive ? 'text-gray-900' : 'text-gray-700'
         }`}>
           {text}
         </span>
         {badge && (
-          <span className="px-2 py-0.5 text-[9px] font-semibold bg-emerald-500 text-white rounded-full uppercase tracking-wider">
+          <span className="px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-700 rounded">
             {badge}
           </span>
         )}
         {disabled && (
-          <span className="px-2 py-0.5 text-[9px] font-medium bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded-full">
-            Soon
+          <span className="px-2 py-0.5 text-xs text-gray-500">
+            Coming Soon
           </span>
         )}
-        {!disabled && !isActive && (
-          <ArrowRight className="h-3 w-3 text-gray-300 dark:text-gray-600 opacity-0 group-hover:opacity-100 transform translate-x-0 group-hover:translate-x-1 transition-all duration-300" />
+        {!disabled && (
+          <ChevronRight className="h-4 w-4 text-gray-400" />
         )}
       </div>
     );
   };
 
-  // Section Heading Component - Compact Style
+  // Section Heading Component
   const SectionHeading = ({ title }) => (
-    <div className="px-4 py-1.5">
-      <p className="text-[9px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-widest">
+    <div className="px-4 py-2">
+      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
         {title}
       </p>
     </div>
@@ -163,31 +164,27 @@ const MobileNavbar = () => {
 
   return (
     <>
-      {/* Fixed Header - Compact & Clean */}
-      <header className="fixed top-0 left-0 w-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-sm z-40 border-b border-gray-200 dark:border-gray-800">
-        <div className="flex justify-between items-center h-12 px-3 max-w-screen-xl mx-auto">
+      {/* Fixed Header */}
+      <header className="fixed top-0 left-0 w-full bg-white shadow-sm z-40 border-b border-gray-200">
+        <div className="flex justify-between items-center h-14 px-4 max-w-screen-xl mx-auto">
           <div className="flex items-center">
             <span 
               className="cursor-pointer"
               onClick={() => router.push('/')}
             >
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-md">
-                  <Zap className="w-4 h-4 text-white" strokeWidth={2.5} />
-                </div>
-                <h1 className="text-base font-bold text-gray-900 dark:text-white tracking-tight">
-                  CHEAPDATE
-                </h1>
-              </div>
+              <h1 className="text-xl font-bold text-gray-900">DataSpot</h1>
             </span>
           </div>
-          <div className="flex items-center">
+          <div className="flex items-center space-x-3">
+            {isLoggedIn && (
+              <Shield className="h-5 w-5 text-gray-400" />
+            )}
             <button 
               onClick={toggleMobileMenu}
-              className="p-2 rounded-lg bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100 transition-all duration-300"
+              className="p-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 transition-colors"
               aria-label="Toggle menu"
             >
-              {isMobileMenuOpen ? <X size={16} /> : <Menu size={16} />}
+              {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
           </div>
         </div>
@@ -196,56 +193,58 @@ const MobileNavbar = () => {
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
         <div 
-          className="fixed inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm z-50 transition-all duration-300"
+          className="fixed inset-0 bg-gray-500 bg-opacity-75 z-50 transition-opacity"
           onClick={() => setIsMobileMenuOpen(false)}
         />
       )}
 
-      {/* Sidebar - Compact Design */}
+      {/* Sidebar */}
       <aside 
-        className={`fixed right-0 top-0 h-full w-[80%] max-w-xs bg-white dark:bg-gray-900 shadow-2xl transform transition-all duration-500 ease-out z-50 ${
+        className={`fixed right-0 top-0 h-full w-80 max-w-[85%] bg-white shadow-xl transform transition-transform duration-300 ease-out z-50 ${
           isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
-        {/* Sidebar Header - Compact */}
-        <div className="border-b border-gray-200 dark:border-gray-800">
-          <div className="flex justify-between items-center p-3 px-4">
-            <h2 className="text-sm font-semibold text-gray-900 dark:text-white">Menu</h2>
+        {/* Sidebar Header */}
+        <div className="border-b border-gray-200">
+          <div className="flex justify-between items-center p-4">
+            <h2 className="text-lg font-semibold text-gray-900">Menu</h2>
             <button 
               onClick={() => setIsMobileMenuOpen(false)}
-              className="p-1.5 rounded-md text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-300"
+              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
               aria-label="Close menu"
             >
-              <X size={16} />
+              <X size={20} />
             </button>
           </div>
           
-          {/* User Info Section - Compact Card Style */}
+          {/* User Info Section */}
           {isLoggedIn && (
             <div className="px-4 pb-4">
               <div 
-                className="flex items-center p-3 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-xl cursor-pointer hover:shadow-md transition-all duration-300 border border-emerald-100 dark:border-emerald-800/50"
+                className="flex items-center p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors"
                 onClick={navigateToProfile}
               >
-                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white shadow-md">
-                  <User size={16} />
+                <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white">
+                  <User size={20} />
                 </div>
                 <div className="ml-3 flex-1">
-                  <div className="font-semibold text-xs text-gray-900 dark:text-white">
-                    {userName ? userName : 'My Account'}
+                  <div className="font-medium text-sm text-gray-900">
+                    {userName || 'User'}
                   </div>
-                  <div className="text-[10px] text-emerald-600 dark:text-emerald-400">View Profile</div>
+                  <div className="text-xs text-gray-500">
+                    {userEmail || 'View Profile'}
+                  </div>
                 </div>
-                <ChevronRight className="h-3.5 w-3.5 text-gray-400" />
+                <ChevronRight className="h-4 w-4 text-gray-400" />
               </div>
             </div>
           )}
         </div>
 
-        {/* Sidebar Content - Compact Layout */}
-        <div className="h-[calc(100vh-140px)] overflow-y-auto">
+        {/* Sidebar Content */}
+        <div className="h-[calc(100vh-180px)] overflow-y-auto">
           {isLoggedIn ? (
-            <div className="py-3">
+            <div className="py-2">
               <SectionHeading title="Main" />
               <NavItem 
                 icon={<Home />} 
@@ -262,7 +261,7 @@ const MobileNavbar = () => {
                 />
               )}
 
-              <div className="my-3">
+              <div className="my-4">
                 <SectionHeading title="Services" />
                 <NavItem 
                   icon={<Globe />} 
@@ -280,33 +279,39 @@ const MobileNavbar = () => {
                   path="/TELECEL" 
                 />
                 <NavItem 
-                  icon={<Sparkles />} 
+                  icon={<Activity />} 
                   text="AT Big Time" 
                   path="/at-big-time"
                   disabled={true} 
                 />
               </div>
 
-              <div className="my-3">
-                <SectionHeading title="Finance" />
+              <div className="my-4">
+                <SectionHeading title="Account" />
                 <NavItem 
                   icon={<Wallet />} 
-                  text="Top Up" 
+                  text="Deposit Funds" 
                   path="/topup" 
                 />
                 <NavItem 
-                  icon={<ShoppingCart />} 
+                  icon={<FileText />} 
                   text="Transactions" 
                   path="/myorders" 
                 />
-              </div>
-
-              <div className="my-3">
-                <SectionHeading title="More" />
                 <NavItem 
                   icon={<BarChart2 />} 
-                  text="Analytics" 
+                  text="Reports" 
                   path="/reports"
+                  disabled={true}
+                />
+              </div>
+
+              <div className="my-4">
+                <SectionHeading title="Support" />
+                <NavItem 
+                  icon={<HelpCircle />} 
+                  text="Help Center" 
+                  path="/help"
                   disabled={true}
                 />
                 <NavItem 
@@ -317,37 +322,39 @@ const MobileNavbar = () => {
                 />
               </div>
 
-              {/* Logout Button - Compact */}
+              {/* Logout Button */}
               <div className="mt-6 px-4 pb-4">
                 <button
                   onClick={handleLogout}
-                  className="w-full flex items-center justify-center py-2 px-3 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400 transition-all duration-300 font-medium text-xs"
+                  className="w-full flex items-center justify-center py-2.5 px-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium text-sm"
                 >
-                  <LogOut size={14} className="mr-1.5" />
+                  <LogOut size={18} className="mr-2" />
                   Sign Out
                 </button>
               </div>
             </div>
           ) : (
-            // Not logged in state - Compact & Modern
-            <div className="p-4 flex flex-col items-center justify-center h-full">
-              <div className="text-center mb-6 max-w-xs">
-                <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg">
-                  <Sparkles className="w-6 h-6 text-white" strokeWidth={2} />
+            // Not logged in state
+            <div className="p-6 flex flex-col items-center justify-center h-full">
+              <div className="text-center mb-8">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+                  <User className="w-8 h-8 text-gray-400" />
                 </div>
-                <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
-                  Welcome to CheapDate
+                <h2 className="text-xl font-semibold text-gray-900 mb-2">
+                  Welcome to DataSpot
                 </h2>
-                <p className="text-xs text-gray-600 dark:text-gray-400">Sign in to access all features</p>
+                <p className="text-sm text-gray-600">
+                  Sign in to access your account and services
+                </p>
               </div>
               
-              <div className="w-full max-w-xs space-y-2">
+              <div className="w-full space-y-3">
                 <button
                   onClick={() => {
                     router.push('/SignIn');
                     setIsMobileMenuOpen(false);
                   }}
-                  className="w-full py-2 px-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 font-semibold text-xs"
+                  className="w-full py-2.5 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm"
                 >
                   Sign In
                 </button>
@@ -357,10 +364,16 @@ const MobileNavbar = () => {
                     router.push('/SignUp');
                     setIsMobileMenuOpen(false);
                   }}
-                  className="w-full py-2 px-3 bg-white dark:bg-gray-800 text-emerald-600 dark:text-emerald-400 border-2 border-emerald-200 dark:border-emerald-800 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-all duration-300 font-semibold text-xs"
+                  className="w-full py-2.5 px-4 bg-white text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50 transition-colors font-medium text-sm"
                 >
                   Create Account
                 </button>
+              </div>
+
+              <div className="mt-8 text-center">
+                <p className="text-xs text-gray-500">
+                  © 2025 DataSpot. All rights reserved.
+                </p>
               </div>
             </div>
           )}
@@ -368,38 +381,9 @@ const MobileNavbar = () => {
       </aside>
 
       {/* Main Content Area */}
-      <main className="pt-12">
+      <main className="pt-14">
         {/* Your content goes here */}
       </main>
-
-      {/* Custom Styles */}
-      <style jsx>{`
-        /* Smooth scrollbar */
-        ::-webkit-scrollbar {
-          width: 4px;
-        }
-        
-        ::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        
-        ::-webkit-scrollbar-thumb {
-          background: #e5e7eb;
-          border-radius: 2px;
-        }
-        
-        .dark ::-webkit-scrollbar-thumb {
-          background: #374151;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-          background: #d1d5db;
-        }
-        
-        .dark ::-webkit-scrollbar-thumb:hover {
-          background: #4b5563;
-        }
-      `}</style>
     </>
   );
 };
