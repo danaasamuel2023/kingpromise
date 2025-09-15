@@ -52,7 +52,6 @@ const DashboardPage = () => {
   
   const [animateStats, setAnimateStats] = useState(false);
   const [showNotice, setShowNotice] = useState(true);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Check for dark mode preference on mount
   useEffect(() => {
@@ -230,53 +229,6 @@ const DashboardPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-b border-gray-200 dark:border-gray-800">
-        <div className="px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <div className="flex items-center space-x-3">
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors lg:hidden"
-              >
-                <Menu className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-              </button>
-              
-              <div className="flex items-center space-x-2">
-                <div className="w-10 h-10 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-                  <Sparkles className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                    DataSpot
-                  </h1>
-                  <p className="text-xs text-gray-500 dark:text-gray-500 hidden sm:block">Smart Data Solutions</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Right Actions */}
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={toggleDarkMode}
-                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-              >
-                {darkMode ? (
-                  <Sun className="w-5 h-5 text-yellow-500" />
-                ) : (
-                  <Moon className="w-5 h-5 text-gray-700" />
-                )}
-              </button>
-              
-              <div className="w-10 h-10 bg-gradient-to-tr from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-white font-semibold">
-                {userName.substring(0, 2).toUpperCase()}
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
-
       <div className="px-4 sm:px-6 lg:px-8 py-6 max-w-7xl mx-auto">
         {/* Service Notice */}
         {showNotice && (
@@ -314,12 +266,24 @@ const DashboardPage = () => {
           </div>
         )}
 
-        {/* Welcome Section */}
-        <div className="mb-6">
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            {getGreeting()}, {userName}! ✨
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400">Welcome to your DataSpot dashboard</p>
+        {/* Welcome Section with Dark Mode Toggle */}
+        <div className="mb-6 flex justify-between items-start">
+          <div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+              {getGreeting()}, {userName}! ✨
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400">Welcome to your DataSpot dashboard</p>
+          </div>
+          <button
+            onClick={toggleDarkMode}
+            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          >
+            {darkMode ? (
+              <Sun className="w-5 h-5 text-yellow-500" />
+            ) : (
+              <Moon className="w-5 h-5 text-gray-700" />
+            )}
+          </button>
         </div>
 
         {/* Stats Grid - Mobile Optimized Yellow Rectangles */}
