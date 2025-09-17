@@ -27,7 +27,7 @@ const Footer = () => {
                 </a>
                 <a href="tel:+233000000000" className="flex items-center text-gray-400 hover:text-white transition-colors text-sm">
                   <Phone className="w-4 h-4 mr-2" />
-                  +233 00 000 0000
+                  +233 597662401
                 </a>
               </div>
             </div>
