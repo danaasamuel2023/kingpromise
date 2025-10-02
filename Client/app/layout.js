@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "DataHustle | Data Marketplace",
+  title: "DataSpot | Data Marketplace",
   description: "The leading platform for data resellers in Ghana to buy and sell client data securely and efficiently.",
   keywords: "data marketplace, Ghana, data resellers, buy data, sell data, client data, Ghana data market",
   verification: {
@@ -26,7 +26,7 @@ export const metadata = {
   openGraph: {
     title: " | Ghana's Premier Data Marketplace",
     description: "Connect with data resellers across Ghana. Buy and sell client data securely on our trusted platform.",
-    url: "https://www.datahustle.shop",
+    url: "https://www.Dataspot.store",
     siteName: "DATAHUSTLE", 
     images: [
       {
