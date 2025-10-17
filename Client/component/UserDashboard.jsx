@@ -250,7 +250,7 @@ const DashboardPage = () => {
                       <Clock className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                       <div>
                         <p className="text-xs text-gray-600 dark:text-gray-400">Service Hours</p>
-                        <p className="text-sm font-medium text-gray-900 dark:text-white">8:00 AM - 9:00 PM</p>
+                        <p className="text-sm font-medium text-gray-900 dark:text-white">7:00 AM - 9:00 PM</p>
                       </div>
                     </div>
                   </div>
