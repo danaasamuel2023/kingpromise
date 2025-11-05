@@ -27,7 +27,7 @@ export const metadata = {
     title: " | Ghana's Premier Data Marketplace",
     description: "Connect with data resellers across Ghana. Buy and sell client data securely on our trusted platform.",
     url: "https://www.Dataspot.store",
-    siteName: "DATAHUSTLE", 
+    siteName: "DATAspot", 
     images: [
       {
         url: "/component/datamart-logo.svg",
@@ -46,13 +46,13 @@ export const metadata = {
     images: ["/images/datamart-twitter.jpg"],
   },
   alternates: {
-    canonical: "https://www.datahustle.shop/",
+    canonical: "https://www.Dataspot.store",
   },
   robots: {
     index: true,
     follow: true,
   },
-  metadataBase: new URL("https://www.datahustle.shop"),
+  metadataBase: new URL("https://www.Dataspot.store"),
 };
 
 export default function RootLayout({ children }) {
