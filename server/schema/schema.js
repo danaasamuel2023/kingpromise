@@ -94,7 +94,6 @@ const DataPurchaseSchema = new mongoose.Schema({
   updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: "Usercheapdata" },
   updatedAt: { type: Date },
   createdAt: { type: Date, default: Date.now }
- 
 });
 
 const TransactionSchema = new mongoose.Schema({
@@ -132,6 +131,10 @@ const TransactionSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  metadata: {
+    type: mongoose.Schema.Types.Mixed,
+    default: {}
+  },
   createdAt: {
     type: Date,
     default: Date.now
@@ -141,6 +144,72 @@ const TransactionSchema = new mongoose.Schema({
     default: Date.now
   }
 });
+
+// ========== TRANSACTION AUDIT SCHEMA ==========
+const TransactionAuditSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Usercheapdata',
+    required: true
+  },
+  transactionType: {
+    type: String,
+    enum: ['deposit', 'withdrawal', 'transfer', 'refund', 'purchase', 'admin-deduction'],
+    required: true
+  },
+  amount: {
+    type: Number,
+    required: true
+  },
+  balanceBefore: {
+    type: Number,
+    default: 0
+  },
+  balanceAfter: {
+    type: Number,
+    default: 0
+  },
+  paymentMethod: {
+    type: String,
+    enum: ['paystack', 'manual', 'system', 'wallet', 'admin-deposit', 'admin-deduction'],
+    default: 'system'
+  },
+  paystackReference: {
+    type: String,
+    sparse: true
+  },
+  paystackAmount: {
+    type: Number
+  },
+  status: {
+    type: String,
+    enum: ['pending', 'completed', 'failed'],
+    default: 'pending'
+  },
+  description: {
+    type: String
+  },
+  initiatedBy: {
+    type: String,
+    enum: ['user', 'system', 'admin'],
+    default: 'system'
+  },
+  fraudFlags: [String],
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now
+  }
+});
+
+// Add indexes for better query performance
+TransactionAuditSchema.index({ userId: 1 });
+TransactionAuditSchema.index({ paystackReference: 1 });
+TransactionAuditSchema.index({ createdAt: -1 });
+TransactionAuditSchema.index({ status: 1 });
 
 // Updated ReferralBonus Schema to include friend registration type
 const ReferralBonusSchema = new mongoose.Schema({
@@ -244,9 +313,19 @@ OrderReportSchema.index({ status: 1 });
 const User = mongoose.model("Usercheapdata", UserSchema);
 const DataPurchase = mongoose.model("DataPurchasecheapdata", DataPurchaseSchema);
 const Transaction = mongoose.model("Transactioncheapdata", TransactionSchema);
+const TransactionAudit = mongoose.model("TransactionAuditcheapdata", TransactionAuditSchema);
 const ReferralBonus = mongoose.model("ReferralBonuscheapdata", ReferralBonusSchema);
 const ApiKey = mongoose.model('ApiKeydatahusle', apiKeySchema);
 const DataInventory = mongoose.model("DataInventorycheapdata", DataInventorySchema);
 const OrderReport = mongoose.model("OrderReporthustle", OrderReportSchema);
 
-module.exports = { User, DataPurchase, Transaction, ReferralBonus, ApiKey, DataInventory, OrderReport };
+module.exports = { 
+  User, 
+  DataPurchase, 
+  Transaction, 
+  TransactionAudit,
+  ReferralBonus, 
+  ApiKey, 
+  DataInventory, 
+  OrderReport 
+};
