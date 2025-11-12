@@ -173,9 +173,9 @@ async function processSuccessfulPayment(reference, paystackData = null) {
         
         console.error(`❌ FRAUD PREVENTED: ${reference} - ${paystackValidation.error}`);
         
-        // Log to audit
+        // Log to audit (without session)
         try {
-          await TransactionAudit.create([{
+          const auditEntry = new TransactionAudit({
             userId: transaction.userId,
             transactionType: 'deposit',
             amount: transaction.amount,
@@ -184,7 +184,8 @@ async function processSuccessfulPayment(reference, paystackData = null) {
             paystackReference: reference,
             description: `FRAUD: Paystack amount mismatch - ${paystackValidation.error}`,
             initiatedBy: 'system'
-          }], { session: null });
+          });
+          await auditEntry.save();
         } catch (e) {
           console.error('Failed to log fraud to audit:', e);
         }
