@@ -12,7 +12,7 @@ const PAYSTACK_SECRET_KEY = 'sk_live_0fba72fb9c4fc71200d2e0cdbb4f2b37c1de396c';
 // Middleware to check if user is admin
 
 // const mongoose = require('mongoose');
-const ARKESEL_API_KEY = 'QkNhS0l2ZUZNeUdweEtmYVRUREg';
+const ARKESEL_API_KEY = 'QkNhS0l2ZUZEtmYVRUREg';
 
 const sendSMS = async (phoneNumber, message, options = {}) => {
   const {
