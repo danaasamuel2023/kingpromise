@@ -18,7 +18,7 @@ const sendSMS = async (phoneNumber, message, options = {}) => {
   const {
     scheduleTime = null,
     useCase = null,
-    senderID = 'Bundle'
+    senderID = 'Dataspot'
   } = options;
 
   // Input validation
