@@ -1,3 +1,5 @@
+// ========== UPDATED SCHEMA.JS - ADD TO YOUR EXISTING FILE ==========
+
 const mongoose = require("mongoose");
 
 // Device Block Schema
@@ -10,7 +12,7 @@ const BlockedDeviceSchema = new mongoose.Schema({
   blockedBy: { type: mongoose.Schema.Types.ObjectId, ref: "Usercheapdata" }
 });
 
-// Friend Registration Schema - for tracking registered friends
+// Friend Registration Schema
 const RegisteredFriendSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "Usercheapdata" },
   name: { type: String },
@@ -19,6 +21,86 @@ const RegisteredFriendSchema = new mongoose.Schema({
   registeredAt: { type: Date, default: Date.now }
 });
 
+// Result Checker Purchase Schema (NEW)
+const ResultCheckerPurchaseSchema = new mongoose.Schema({
+  userId: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: "Usercheapdata", 
+    required: true 
+  },
+  phoneNumber: { 
+    type: String, 
+    required: true 
+  },
+  checkerType: { 
+    type: String, 
+    enum: ["WAEC", "BECE"], 
+    required: true 
+  },
+  serialNumber: { 
+    type: String, 
+    sparse: true
+  },
+  pin: { 
+    type: String, 
+    sparse: true
+  },
+  price: { 
+    type: Number, 
+    default: 19.00,
+    required: true 
+  },
+  status: { 
+    type: String, 
+    enum: ["pending", "completed", "failed", "refunded"], 
+    default: "pending" 
+  },
+  reference: { 
+    type: String, 
+    unique: true,
+    required: true 
+  },
+  datamartReference: { 
+    type: String, 
+    sparse: true
+  },
+  datamartPurchaseId: { 
+    type: String, 
+    sparse: true
+  },
+  apiResponse: { 
+    type: mongoose.Schema.Types.Mixed,
+    default: {}
+  },
+  transactionId: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: "Transactioncheapdata" 
+  },
+  notificationSent: { 
+    type: Boolean, 
+    default: false 
+  },
+  notificationMethod: { 
+    type: String, 
+    enum: ["sms", "system", "manual"],
+    default: "sms" 
+  },
+  createdAt: { 
+    type: Date, 
+    default: Date.now 
+  },
+  updatedAt: { 
+    type: Date, 
+    default: Date.now 
+  }
+});
+
+ResultCheckerPurchaseSchema.index({ userId: 1 });
+ResultCheckerPurchaseSchema.index({ reference: 1 });
+ResultCheckerPurchaseSchema.index({ datamartReference: 1 });
+ResultCheckerPurchaseSchema.index({ status: 1 });
+ResultCheckerPurchaseSchema.index({ createdAt: -1 });
+
 // User Schema with blocked devices, registered friends and admin approval
 const UserSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -26,28 +108,24 @@ const UserSchema = new mongoose.Schema({
   password: { type: String, required: true },
   phoneNumber: { type: String, required: true, unique: true },
   role: { type: String, enum: ["buyer", "seller", "reporter", "admin", "Dealer"], default: "buyer" },
-  walletBalance: { type: Number, default: 0 }, // User's wallet balance
-  referralCode: { type: String, unique: true }, // User's unique referral code
-  referredBy: { type: String, default: null }, // Who referred this user
+  walletBalance: { type: Number, default: 0 },
+  referralCode: { type: String, unique: true },
+  referredBy: { type: String, default: null },
   
-  // Friend registration tracking
-  registeredByUserId: { type: mongoose.Schema.Types.ObjectId, ref: "Usercheapdata" }, // User who registered this user
-  registeredFriends: [RegisteredFriendSchema], // Friends registered by this user
+  registeredByUserId: { type: mongoose.Schema.Types.ObjectId, ref: "Usercheapdata" },
+  registeredFriends: [RegisteredFriendSchema],
   
   createdAt: { type: Date, default: Date.now },
   
-  // Password reset fields
-  resetPasswordOTP: { type: String, select: false }, // OTP for password reset
-  resetPasswordOTPExpiry: { type: Date, select: false }, // OTP expiration time
-  lastPasswordReset: { type: Date }, // When password was last reset
+  resetPasswordOTP: { type: String, select: false },
+  resetPasswordOTPExpiry: { type: Date, select: false },
+  lastPasswordReset: { type: Date },
   
-  // Account status fields
-  isDisabled: { type: Boolean, default: false }, // If account is disabled
-  disableReason: { type: String }, // Why account was disabled
-  disabledAt: { type: Date }, // When account was disabled
+  isDisabled: { type: Boolean, default: false },
+  disableReason: { type: String },
+  disabledAt: { type: Date },
   
-  // Device blocking
-  blockedDevices: [BlockedDeviceSchema], // Array of blocked devices
+  blockedDevices: [BlockedDeviceSchema],
   lastLogin: {
     deviceId: { type: String },
     ipAddress: { type: String },
@@ -55,7 +133,6 @@ const UserSchema = new mongoose.Schema({
     timestamp: { type: Date }
   },
   
-  // Admin approval fields
   approvalStatus: { 
     type: String, 
     enum: ["pending", "approved", "rejected"], 
@@ -73,10 +150,8 @@ const UserSchema = new mongoose.Schema({
   }
 });
 
-// Add index for approval status to make queries more efficient
 UserSchema.index({ approvalStatus: 1 });
 
-// Other schemas remain the same...
 const DataPurchaseSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "Usercheapdata", required: true }, 
   phoneNumber: { type: String, required: true }, 
@@ -87,9 +162,7 @@ const DataPurchaseSchema = new mongoose.Schema({
   price: { type: Number, required: true }, 
   geonetReference: { type: String, required: true }, 
   status: { type: String, enum: ["pending", "completed", "failed","processing","refunded","refund","delivered","on","waiting","accepted"], default: "pending" }, 
-  // Add this processing field to prevent duplicate exports
   processing: { type: Boolean, default: false },
-  // Add these fields for admin notes and update tracking
   adminNotes: { type: String },
   updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: "Usercheapdata" },
   updatedAt: { type: Date },
@@ -104,7 +177,7 @@ const TransactionSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['deposit', 'withdrawal', 'transfer', 'refund','purchase','admin-deduction'],
+    enum: ['deposit', 'withdrawal', 'transfer', 'refund','purchase','admin-deduction', 'checker-purchase'],
     required: true
   },
   amount: {
@@ -126,7 +199,6 @@ const TransactionSchema = new mongoose.Schema({
     enum: ['paystack', 'manual', 'system','wallet','admin-deposit','admin-deduction'],
     default: 'paystack'
   },
-  // Add the new processing field to prevent double processing
   processing: {
     type: Boolean,
     default: false
@@ -145,7 +217,6 @@ const TransactionSchema = new mongoose.Schema({
   }
 });
 
-// ========== TRANSACTION AUDIT SCHEMA ==========
 const TransactionAuditSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -154,7 +225,7 @@ const TransactionAuditSchema = new mongoose.Schema({
   },
   transactionType: {
     type: String,
-    enum: ['deposit', 'withdrawal', 'transfer', 'refund', 'purchase', 'admin-deduction'],
+    enum: ['deposit', 'withdrawal', 'transfer', 'refund', 'purchase', 'admin-deduction', 'checker-purchase'],
     required: true
   },
   amount: {
@@ -205,19 +276,16 @@ const TransactionAuditSchema = new mongoose.Schema({
   }
 });
 
-// Add indexes for better query performance
 TransactionAuditSchema.index({ userId: 1 });
 TransactionAuditSchema.index({ paystackReference: 1 });
 TransactionAuditSchema.index({ createdAt: -1 });
 TransactionAuditSchema.index({ status: 1 });
 
-// Updated ReferralBonus Schema to include friend registration type
 const ReferralBonusSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "Usercheapdata", required: true }, 
   referredUserId: { type: mongoose.Schema.Types.ObjectId, ref: "Usercheapdata", required: true }, 
   amount: { type: Number, required: true }, 
   status: { type: String, enum: ["pending", "credited"], default: "pending" },
-  // Added registration type field to track how the user was referred
   registrationType: { type: String, enum: ["referral", "friend-registration"], default: "referral" },
   createdAt: { type: Date, default: Date.now }
 });
@@ -318,6 +386,7 @@ const ReferralBonus = mongoose.model("ReferralBonuscheapdata", ReferralBonusSche
 const ApiKey = mongoose.model('ApiKeydatahusle', apiKeySchema);
 const DataInventory = mongoose.model("DataInventorycheapdata", DataInventorySchema);
 const OrderReport = mongoose.model("OrderReporthustle", OrderReportSchema);
+const ResultCheckerPurchase = mongoose.model("ResultCheckerPurchasecheapdata", ResultCheckerPurchaseSchema);
 
 module.exports = { 
   User, 
@@ -327,5 +396,6 @@ module.exports = {
   ReferralBonus, 
   ApiKey, 
   DataInventory, 
-  OrderReport 
+  OrderReport,
+  ResultCheckerPurchase
 };
